@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class BlacklistRequest implements Serializable {
+public class PortRequest implements Serializable {
 
     private String apiKey;
     private String responseId;
