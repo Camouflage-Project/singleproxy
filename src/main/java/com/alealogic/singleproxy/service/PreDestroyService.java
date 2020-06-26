@@ -15,6 +15,6 @@ public class PreDestroyService {
 
     @PreDestroy
     public void destroy() {
-        torManager.removeAllContainers();
+        torManager.stopAndRemoveAllTorContainers();
     }
 }

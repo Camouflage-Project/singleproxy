@@ -3,7 +3,6 @@ package com.alealogic.singleproxy.service;
 import com.alealogic.singleproxy.model.TorContainer;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import org.slf4j.Logger;
@@ -24,30 +23,48 @@ public class TorManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TorManager.class);
 
+    private final IpService ipService;
     private int portToAssign = 9050;
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
-    private final Set<TorContainer> torContainers = new HashSet<>();
     private Iterator<Integer> httpPortIterator;
+    private final Map<String, TorContainer> hashToTorContainer = new HashMap<>();
+
+    public TorManager(IpService ipService) {
+        this.ipService = ipService;
+    }
 
     public int getNextTorPort() {
         if (httpPortIterator == null || !httpPortIterator.hasNext())
-            httpPortIterator = torContainers.stream().map(TorContainer::getHttpPort).iterator();
+            httpPortIterator = hashToTorContainer.values().stream().map(TorContainer::getHttpPort).iterator();
         return httpPortIterator.next();
     }
 
-    public Set<TorContainer> createTorContainers(int amount) {
+    public void createTorContainers(int amount) {
+        List<TorContainer> torContainers = new ArrayList<>();
+
         IntStream.range(0, amount).forEach(i -> {
             TorContainer torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
+
+            LOGGER.info("listening on port: " + torContainer.getHttpPort());
+
             torContainers.add(torContainer);
         });
 
-        return torContainers;
+        torContainers.forEach(this::authenticateTor);
+        ipService.setPublicIp(torContainers);
+
+        torContainers.forEach(torContainer -> {
+            while (hashToTorContainer.containsKey(torContainer.getHash())) {
+                changeIdentity(torContainer);
+                ipService.setPublicIp(torContainer);
+            }
+
+            hashToTorContainer.put(torContainer.getHash(), torContainer);
+        });
     }
 
-    public void removeAllContainers() {
-        List<Container> containers = dockerClient.listContainersCmd().exec();
-        containers.forEach(container -> dockerClient.stopContainerCmd(container.getId()).exec());
-        containers.forEach(container -> dockerClient.removeContainerCmd(container.getId()).exec());
+    public void stopAndRemoveAllTorContainers() {
+        hashToTorContainer.values().forEach(container -> container.shutDown(dockerClient));
     }
 
     public void changeIdentity(TorContainer torContainer) {
@@ -75,11 +92,10 @@ public class TorManager {
 
         dockerClient.startContainerCmd(container.getId()).exec();
 
-        TorContainer torContainer = new TorContainer(container.getId(), torPort, controlPort, httpPort);
-        return authenticateTor(torContainer);
+        return new TorContainer(container.getId(), torPort, controlPort, httpPort);
     }
 
-    private TorContainer authenticateTor(TorContainer torContainer) {
+    private void authenticateTor(TorContainer torContainer) {
         Socket controlSocket;
         DataOutputStream socketWriter;
         BufferedReader socketReader;
@@ -113,7 +129,6 @@ public class TorManager {
         torContainer.setControlSocket(controlSocket);
         torContainer.setSocketReader(socketReader);
         torContainer.setSocketWriter(socketWriter);
-        return torContainer;
     }
 
     private boolean portIsAvailable(int port) {
