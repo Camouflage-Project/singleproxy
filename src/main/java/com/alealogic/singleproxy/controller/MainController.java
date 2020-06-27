@@ -1,5 +1,6 @@
 package com.alealogic.singleproxy.controller;
 
+import com.alealogic.singleproxy.exception.ApiKeyAuthenticationException;
 import com.alealogic.singleproxy.model.BlacklistRequest;
 import com.alealogic.singleproxy.model.PortRequest;
 import com.alealogic.singleproxy.model.PortResponse;
@@ -19,7 +20,8 @@ public class MainController {
 
     @PostMapping("port")
     public PortResponse port(@RequestBody PortRequest portRequest) {
-        return torManager.getNextTorPort(portRequest.getApiKey());
+        throw new ApiKeyAuthenticationException();
+//        return torManager.getNextTorPort(portRequest.getApiKey());
     }
 
     @PostMapping("blacklist")

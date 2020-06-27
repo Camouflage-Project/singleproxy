@@ -60,12 +60,15 @@ public class TorManager {
 
         torContainers.forEach(torContainer -> {
             while (hashToTorContainer.containsKey(torContainer.getHash())) {
+                LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
                 changeIdentity(torContainer);
                 ipService.setPublicIp(torContainer);
             }
 
             hashToTorContainer.put(torContainer.getHash(), torContainer);
         });
+
+        LOGGER.info("created " + amount + " tor containers");
     }
 
     public void stopAndRemoveAllTorContainers() {
@@ -79,7 +82,7 @@ public class TorManager {
             socketWriter.flush();
 
             String response = torContainer.getSocketReader().readLine();
-            System.out.println(response);
+            LOGGER.info("changing identity... response: " + response);
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
@@ -117,7 +120,7 @@ public class TorManager {
                 socketWriter.write(("AUTHENTICATE \"" + password + "\"" + "\r\n").getBytes());
                 socketWriter.flush();
                 String response = socketReader.readLine();
-                System.out.println(response);
+                LOGGER.info("tor authentication response: " + response);
                 authenticated = response != null && response.equals("250 OK");
                 break;
             } catch (IOException ioException) {
