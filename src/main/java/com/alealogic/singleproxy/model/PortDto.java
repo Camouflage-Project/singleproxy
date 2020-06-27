@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-public class PortResponse implements Serializable {
+public class PortDto implements Serializable {
 
     private int port;
     private String ipId;

@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Set;
 
 @Data
 public class TorContainer {
@@ -18,7 +17,7 @@ public class TorContainer {
 
     private String containerId;
     private String ipAddressOfExitNode;
-    private String hash;
+    private String ipId;
     private int torPort;
     private int controlPort;
     private int httpPort;
@@ -26,7 +25,6 @@ public class TorContainer {
     private Socket controlSocket;
     private BufferedReader socketReader;
     private DataOutputStream socketWriter;
-    private Set<User> blacklistedUsers;
 
     public TorContainer(String containerId, int torPort, int controlPort, int httpPort) {
         this.containerId = containerId;

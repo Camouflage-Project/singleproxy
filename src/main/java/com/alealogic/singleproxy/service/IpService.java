@@ -53,7 +53,7 @@ public class IpService {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String ipAddressOfExitNode = response.body().string();
                 torContainer.setIpAddressOfExitNode(ipAddressOfExitNode);
-                torContainer.setHash(Hasher.getHash(ipAddressOfExitNode));
+                torContainer.setIpId(Hasher.getHash(ipAddressOfExitNode));
 
                 LOGGER.info("ip address of exit node: " + ipAddressOfExitNode);
 
@@ -71,7 +71,7 @@ public class IpService {
             Response response = call.execute();
             String ipAddressOfExitNode = response.body().string();
             torContainer.setIpAddressOfExitNode(ipAddressOfExitNode);
-            torContainer.setHash(Hasher.getHash(ipAddressOfExitNode));
+            torContainer.setIpId(Hasher.getHash(ipAddressOfExitNode));
         } catch (IOException ioException) {
             LOGGER.error(ioException.getMessage(), ioException);
         }

@@ -1,6 +1,7 @@
 package com.alealogic.singleproxy.service;
 
-import com.alealogic.singleproxy.model.PortResponse;
+import com.alealogic.singleproxy.entity.Customer;
+import com.alealogic.singleproxy.model.PortDto;
 import com.alealogic.singleproxy.model.TorContainer;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
@@ -27,19 +28,19 @@ public class TorManager {
     private final IpService ipService;
     private int portToAssign = 9050;
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
-    private Iterator<PortResponse> httpPortIterator;
-    private final Map<String, TorContainer> hashToTorContainer = new HashMap<>();
+    private Iterator<PortDto> httpPortIterator;
+    private final Map<String, TorContainer> ipIdToTorContainer = new HashMap<>();
 
     public TorManager(IpService ipService) {
         this.ipService = ipService;
     }
 
-    public PortResponse getNextTorPort(String apiKey) {
+    public PortDto getNextTorPortForCustomer(Customer customer) {
         if (httpPortIterator == null || !httpPortIterator.hasNext())
-            httpPortIterator = hashToTorContainer
+            httpPortIterator = ipIdToTorContainer
                     .values()
                     .stream()
-                    .map(torContainer -> new PortResponse(torContainer.getHttpPort(), torContainer.getHash()))
+                    .map(torContainer -> new PortDto(torContainer.getHttpPort(), torContainer.getIpId()))
                     .iterator();
         return httpPortIterator.next();
     }
@@ -59,20 +60,20 @@ public class TorManager {
         ipService.setPublicIp(torContainers);
 
         torContainers.forEach(torContainer -> {
-            while (hashToTorContainer.containsKey(torContainer.getHash())) {
+            while (ipIdToTorContainer.containsKey(torContainer.getIpId())) {
                 LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
                 changeIdentity(torContainer);
                 ipService.setPublicIp(torContainer);
             }
 
-            hashToTorContainer.put(torContainer.getHash(), torContainer);
+            ipIdToTorContainer.put(torContainer.getIpId(), torContainer);
         });
 
         LOGGER.info("created " + amount + " tor containers");
     }
 
     public void stopAndRemoveAllTorContainers() {
-        hashToTorContainer.values().forEach(container -> container.shutDown(dockerClient));
+        ipIdToTorContainer.values().forEach(container -> container.shutDown(dockerClient));
     }
 
     public void changeIdentity(TorContainer torContainer) {

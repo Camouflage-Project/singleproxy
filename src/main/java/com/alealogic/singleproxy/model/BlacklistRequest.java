@@ -7,6 +7,5 @@ import java.io.Serializable;
 @Data
 public class BlacklistRequest implements Serializable {
 
-    private String apiKey;
-    private String responseId;
+    private String ipId;
 }
