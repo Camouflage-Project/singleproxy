@@ -8,5 +8,4 @@ import java.io.Serializable;
 public class PortRequest implements Serializable {
 
     private String apiKey;
-    private String responseId;
 }

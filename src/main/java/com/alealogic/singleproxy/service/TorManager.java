@@ -1,5 +1,6 @@
 package com.alealogic.singleproxy.service;
 
+import com.alealogic.singleproxy.model.PortResponse;
 import com.alealogic.singleproxy.model.TorContainer;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
@@ -26,16 +27,20 @@ public class TorManager {
     private final IpService ipService;
     private int portToAssign = 9050;
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
-    private Iterator<Integer> httpPortIterator;
+    private Iterator<PortResponse> httpPortIterator;
     private final Map<String, TorContainer> hashToTorContainer = new HashMap<>();
 
     public TorManager(IpService ipService) {
         this.ipService = ipService;
     }
 
-    public int getNextTorPort() {
+    public PortResponse getNextTorPort(String apiKey) {
         if (httpPortIterator == null || !httpPortIterator.hasNext())
-            httpPortIterator = hashToTorContainer.values().stream().map(TorContainer::getHttpPort).iterator();
+            httpPortIterator = hashToTorContainer
+                    .values()
+                    .stream()
+                    .map(torContainer -> new PortResponse(torContainer.getHttpPort(), torContainer.getHash()))
+                    .iterator();
         return httpPortIterator.next();
     }
 

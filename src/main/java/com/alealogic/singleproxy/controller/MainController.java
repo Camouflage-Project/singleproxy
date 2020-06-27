@@ -2,6 +2,7 @@ package com.alealogic.singleproxy.controller;
 
 import com.alealogic.singleproxy.model.BlacklistRequest;
 import com.alealogic.singleproxy.model.PortRequest;
+import com.alealogic.singleproxy.model.PortResponse;
 import com.alealogic.singleproxy.service.TorManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +18,8 @@ public class MainController {
     }
 
     @PostMapping("port")
-    public int port(@RequestBody PortRequest portRequest) {
-        return torManager.getNextTorPort();
+    public PortResponse port(@RequestBody PortRequest portRequest) {
+        return torManager.getNextTorPort(portRequest.getApiKey());
     }
 
     @PostMapping("blacklist")
