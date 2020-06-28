@@ -16,6 +16,6 @@ public class AppStartupRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        torManager.createTorContainers(4);
+        torManager.createTorContainers();
     }
 }

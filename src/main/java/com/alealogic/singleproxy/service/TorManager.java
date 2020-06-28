@@ -1,14 +1,17 @@
 package com.alealogic.singleproxy.service;
 
+import com.alealogic.singleproxy.entity.BlacklistedIp;
 import com.alealogic.singleproxy.entity.Customer;
 import com.alealogic.singleproxy.model.PortDto;
 import com.alealogic.singleproxy.model.TorContainer;
+import com.alealogic.singleproxy.repository.BlacklistedIpRepository;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -19,6 +22,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -26,14 +30,18 @@ public class TorManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TorManager.class);
 
+    @Value("${number.tor.nodes}")
+    private Integer numberOfTorNodes;
     private final IpService ipService;
+    private final BlacklistedIpRepository blacklistedIpRepository;
     private int portToAssign = 9050;
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
     private final Map<Customer, Queue<TorContainer>> customerToNodes = new HashMap<>();
     private final Map<String, TorContainer> ipIdToTorContainer = new HashMap<>();
 
-    public TorManager(IpService ipService) {
+    public TorManager(IpService ipService, BlacklistedIpRepository blacklistedIpRepository) {
         this.ipService = ipService;
+        this.blacklistedIpRepository = blacklistedIpRepository;
     }
 
     public PortDto getNextTorPortForCustomer(Customer customer) {
@@ -47,10 +55,10 @@ public class TorManager {
         return new PortDto(nextNode.getHttpPort(), nextNode.getIpId());
     }
 
-    public void createTorContainers(int amount) {
+    public void createTorContainers() {
         List<TorContainer> torContainers = new ArrayList<>();
 
-        IntStream.range(0, amount).forEach(i -> {
+        IntStream.range(0, numberOfTorNodes).forEach(i -> {
             TorContainer torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
 
             LOGGER.info("listening on port: " + torContainer.getHttpPort());
@@ -66,12 +74,13 @@ public class TorManager {
                 LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
                 changeIdentity(torContainer);
                 ipService.setPublicIp(torContainer);
+                LOGGER.info("New ip is: " + torContainer.getIpAddressOfExitNode());
             }
 
             ipIdToTorContainer.put(torContainer.getIpId(), torContainer);
         });
 
-        LOGGER.info("created " + amount + " tor containers");
+        LOGGER.info("created " + ipIdToTorContainer.size() + " tor containers");
     }
 
     public void stopAndRemoveAllTorContainers() {
@@ -170,7 +179,10 @@ public class TorManager {
     }
 
     private Queue<TorContainer> getNodesForCustomer(Customer customer) {
+        Set<String> allByCustomerId = blacklistedIpRepository.findAllByCustomerId(customer.getId()).stream().map(BlacklistedIp::getIpId).collect(Collectors.toSet());
+
         List<TorContainer> containers = new ArrayList<>(ipIdToTorContainer.values());
+        containers.removeIf(container -> allByCustomerId.contains(container.getIpId()));
         Collections.shuffle(containers);
 
         LinkedBlockingQueue<TorContainer> nodes = new LinkedBlockingQueue<>(containers.subList(0, customer.getEnabledProxies()));

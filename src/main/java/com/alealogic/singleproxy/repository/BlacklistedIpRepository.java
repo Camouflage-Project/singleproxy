@@ -4,6 +4,7 @@ import com.alealogic.singleproxy.entity.BlacklistedIp;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.Set;
 
 public interface BlacklistedIpRepository extends JpaRepository<BlacklistedIp, Long> {
 
