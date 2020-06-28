@@ -55,7 +55,7 @@ public class TorManager {
         return new PortDto(nextNode.getHttpPort(), nextNode.getIpId());
     }
 
-    public void createTorContainers() {
+    public List<TorContainer> createTorContainers() {
         List<TorContainer> torContainers = new ArrayList<>();
 
         IntStream.range(0, numberOfTorNodes).forEach(i -> {
@@ -72,6 +72,7 @@ public class TorManager {
         torContainers.forEach(torContainer -> {
             while (ipIdToTorContainer.containsKey(torContainer.getIpId())) {
                 LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
+                sleep(10);
                 changeIdentity(torContainer);
                 ipService.setPublicIp(torContainer);
                 LOGGER.info("New ip is: " + torContainer.getIpAddressOfExitNode());
@@ -81,6 +82,7 @@ public class TorManager {
         });
 
         LOGGER.info("created " + ipIdToTorContainer.size() + " tor containers");
+        return torContainers;
     }
 
     public void stopAndRemoveAllTorContainers() {
@@ -137,11 +139,7 @@ public class TorManager {
                 break;
             } catch (IOException ioException) {
                 LOGGER.info(ioException.getMessage());
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    LOGGER.info(e.getMessage());
-                }
+                sleep(1);
             }
         }
 
@@ -163,7 +161,7 @@ public class TorManager {
                 try {
                     s.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         }
@@ -193,5 +191,13 @@ public class TorManager {
     public void blacklistIp(Customer customer, String ipId) {
         Queue<TorContainer> nodes = customerToNodes.get(customer);
         nodes.removeIf(node -> node.getIpId().equals(ipId));
+    }
+
+    private void sleep(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            LOGGER.info(e.getMessage());
+        }
     }
 }
