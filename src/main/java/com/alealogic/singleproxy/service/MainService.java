@@ -27,11 +27,12 @@ public class MainService {
     public void blacklistIp(Customer customer, BlacklistRequest blacklistRequest) {
         BlacklistedIp byCustomerIdAndIpId = blacklistedIpRepository.findByCustomerIdAndIpId(customer.getId(), blacklistRequest.getIpId());
         Optional.ofNullable(byCustomerIdAndIpId)
-                .ifPresentOrElse(x -> {}, () -> createAndSaveBlacklistedIp(customer.getId(), blacklistRequest.getIpId()));
+                .ifPresentOrElse(x -> {}, () -> blacklistIp(customer, blacklistRequest.getIpId()));
     }
 
-    private void createAndSaveBlacklistedIp(Long customerId, String ipId) {
-        BlacklistedIp blacklistedIp = new BlacklistedIp(customerId, ipId);
+    private void blacklistIp(Customer customer, String ipId) {
+        torManager.blacklistIp(customer, ipId);
+        BlacklistedIp blacklistedIp = new BlacklistedIp(customer.getId(), ipId);
         blacklistedIpRepository.save(blacklistedIp);
     }
 }

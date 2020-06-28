@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.IntStream;
 
 @Service
@@ -28,7 +29,7 @@ public class TorManager {
     private final IpService ipService;
     private int portToAssign = 9050;
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
-    private Iterator<PortDto> httpPortIterator;
+    private final Map<Customer, Queue<TorContainer>> customerToNodes = new HashMap<>();
     private final Map<String, TorContainer> ipIdToTorContainer = new HashMap<>();
 
     public TorManager(IpService ipService) {
@@ -36,13 +37,14 @@ public class TorManager {
     }
 
     public PortDto getNextTorPortForCustomer(Customer customer) {
-        if (httpPortIterator == null || !httpPortIterator.hasNext())
-            httpPortIterator = ipIdToTorContainer
-                    .values()
-                    .stream()
-                    .map(torContainer -> new PortDto(torContainer.getHttpPort(), torContainer.getIpId()))
-                    .iterator();
-        return httpPortIterator.next();
+        Queue<TorContainer> nodes;
+        if (customerToNodes.containsKey(customer)) nodes = customerToNodes.get(customer);
+        else nodes = getNodesForCustomer(customer);
+
+        TorContainer nextNode = nodes.remove();
+        nodes.add(nextNode);
+
+        return new PortDto(nextNode.getHttpPort(), nextNode.getIpId());
     }
 
     public void createTorContainers(int amount) {
@@ -165,5 +167,19 @@ public class TorManager {
             if (portIsAvailable(port)) availablePorts.add(port);
         }
         return availablePorts;
+    }
+
+    private Queue<TorContainer> getNodesForCustomer(Customer customer) {
+        List<TorContainer> containers = new ArrayList<>(ipIdToTorContainer.values());
+        Collections.shuffle(containers);
+
+        LinkedBlockingQueue<TorContainer> nodes = new LinkedBlockingQueue<>(containers.subList(0, customer.getEnabledProxies()));
+        customerToNodes.put(customer, nodes);
+        return nodes;
+    }
+
+    public void blacklistIp(Customer customer, String ipId) {
+        Queue<TorContainer> nodes = customerToNodes.get(customer);
+        nodes.removeIf(node -> node.getIpId().equals(ipId));
     }
 }
