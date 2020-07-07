@@ -7,6 +7,7 @@ import com.alealogic.singleproxy.model.PortDto;
 import com.alealogic.singleproxy.repository.BlacklistedIpRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
@@ -34,5 +35,9 @@ public class MainService {
         torManager.blacklistIp(customer, ipId);
         BlacklistedIp blacklistedIp = new BlacklistedIp(customer.getId(), ipId);
         blacklistedIpRepository.save(blacklistedIp);
+    }
+
+    public Collection<String> getAllPortsForCustomer(Customer customer) {
+        return torManager.getAllPortsForCustomer(customer);
     }
 }

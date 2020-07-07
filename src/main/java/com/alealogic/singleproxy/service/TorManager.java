@@ -34,7 +34,7 @@ public class TorManager {
     private Integer numberOfTorNodes;
     private final IpService ipService;
     private final BlacklistedIpRepository blacklistedIpRepository;
-    private int portToAssign = 9050;
+    private int portToAssign = 10060;
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
     private final Map<Customer, Queue<TorContainer>> customerToNodes = new HashMap<>();
     private final Map<String, TorContainer> ipIdToTorContainer = new HashMap<>();
@@ -85,6 +85,28 @@ public class TorManager {
         return torContainers;
     }
 
+    public List<TorContainer> createManyTorContainers(int iterations) {
+        List<TorContainer> result = new ArrayList<>();
+
+        IntStream.range(0, iterations).forEach(i -> {
+            List<TorContainer> torContainers = new ArrayList<>();
+            IntStream.range(0, numberOfTorNodes).forEach(j -> {
+                TorContainer torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
+
+                LOGGER.info("listening on port: " + torContainer.getHttpPort());
+
+                torContainers.add(torContainer);
+            });
+
+            torContainers.forEach(this::authenticateTor);
+            ipService.setPublicIp(torContainers);
+            torContainers.forEach(torContainer -> torContainer.shutDown(dockerClient));
+            result.addAll(torContainers);
+        });
+
+        return result;
+    }
+
     public void stopAndRemoveAllTorContainers() {
         ipIdToTorContainer.values().forEach(container -> container.shutDown(dockerClient));
     }
@@ -102,7 +124,7 @@ public class TorManager {
         }
     }
 
-    private TorContainer startTorContainer(Integer... ports) {
+    public TorContainer startTorContainer(Integer... ports) {
         int torPort = ports[0];
         int controlPort = ports[1];
         int httpPort = ports[2];
@@ -167,7 +189,7 @@ public class TorManager {
         }
     }
 
-    private List<Integer> getThreeAvailablePorts() {
+    public List<Integer> getThreeAvailablePorts() {
         List<Integer> availablePorts = new ArrayList<>();
         while (availablePorts.size() < 3) {
             int port = portToAssign++;
@@ -183,7 +205,7 @@ public class TorManager {
         containers.removeIf(container -> allByCustomerId.contains(container.getIpId()));
         Collections.shuffle(containers);
 
-        LinkedBlockingQueue<TorContainer> nodes = new LinkedBlockingQueue<>(containers.subList(0, customer.getEnabledProxies()));
+        LinkedBlockingQueue<TorContainer> nodes = new LinkedBlockingQueue<>(containers.subList(0, Math.min(customer.getEnabledProxies(), containers.size())));
         customerToNodes.put(customer, nodes);
         return nodes;
     }
@@ -199,5 +221,13 @@ public class TorManager {
         } catch (InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
+    }
+
+    public Collection<String> getAllPortsForCustomer(Customer customer) {
+        Queue<TorContainer> nodes;
+        if (customerToNodes.containsKey(customer)) nodes = customerToNodes.get(customer);
+        else nodes = getNodesForCustomer(customer);
+
+        return nodes.stream().map(TorContainer::getHttpPort).map(Object::toString).collect(Collectors.toSet());
     }
 }
