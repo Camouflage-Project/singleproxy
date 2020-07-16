@@ -70,19 +70,31 @@ public class TorManager {
         ipService.setPublicIp(torContainers);
 
         torContainers.forEach(torContainer -> {
-            while (ipIdToTorContainer.containsKey(torContainer.getIpId())) {
-                LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
-                sleep(10);
-                changeIdentity(torContainer);
-                ipService.setPublicIp(torContainer);
-                LOGGER.info("New ip is: " + torContainer.getIpAddressOfExitNode());
-            }
-
+            makeSureIpIsUnique(torContainer);
             ipIdToTorContainer.put(torContainer.getIpId(), torContainer);
         });
 
         LOGGER.info("created " + ipIdToTorContainer.size() + " tor containers");
         return torContainers;
+    }
+
+    private void makeSureIpIsUnique(TorContainer torContainer) {
+        while (ipIdToTorContainer.containsKey(torContainer.getIpId())) {
+            LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
+            sleep(10);
+            changeIdentity(torContainer);
+            ipService.setPublicIp(torContainer);
+            LOGGER.info("New ip is: " + torContainer.getIpAddressOfExitNode());
+        }
+    }
+
+    private TorContainer getTorContainerWithUniqueIpId() {
+        TorContainer torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
+        LOGGER.info("listening on port: " + torContainer.getHttpPort());
+        authenticateTor(torContainer);
+        makeSureIpIsUnique(torContainer);
+
+        return torContainer;
     }
 
     public List<TorContainer> createManyTorContainers(int iterations) {
@@ -169,6 +181,7 @@ public class TorManager {
         torContainer.setControlSocket(controlSocket);
         torContainer.setSocketReader(socketReader);
         torContainer.setSocketWriter(socketWriter);
+        torContainer.setRunning(true);
     }
 
     private boolean portIsAvailable(int port) {
@@ -199,10 +212,10 @@ public class TorManager {
     }
 
     private Queue<TorContainer> getNodesForCustomer(Customer customer) {
-        Set<String> allByCustomerId = blacklistedIpRepository.findAllByCustomerId(customer.getId()).stream().map(BlacklistedIp::getIpId).collect(Collectors.toSet());
+        Set<String> blacklistedIpIds = blacklistedIpRepository.findAllByCustomerId(customer.getId()).stream().map(BlacklistedIp::getIpId).collect(Collectors.toSet());
 
         List<TorContainer> containers = new ArrayList<>(ipIdToTorContainer.values());
-        containers.removeIf(container -> allByCustomerId.contains(container.getIpId()));
+        containers.removeIf(container -> blacklistedIpIds.contains(container.getIpId()));
         Collections.shuffle(containers);
 
         LinkedBlockingQueue<TorContainer> nodes = new LinkedBlockingQueue<>(containers.subList(0, Math.min(customer.getEnabledProxies(), containers.size())));
@@ -213,6 +226,19 @@ public class TorManager {
     public void blacklistIp(Customer customer, String ipId) {
         Queue<TorContainer> nodes = customerToNodes.get(customer);
         nodes.removeIf(node -> node.getIpId().equals(ipId));
+
+        replaceIpId(customer, ipId);
+    }
+
+    private void replaceIpId(Customer customer, String ipId) {
+        TorContainer torContainerToShutDown = ipIdToTorContainer.get(ipId);
+        torContainerToShutDown.shutDown(dockerClient);
+
+        TorContainer newTorContainer = getTorContainerWithUniqueIpId();
+        ipIdToTorContainer.put(newTorContainer.getIpId(), newTorContainer);
+
+        Queue<TorContainer> torContainers = customerToNodes.get(customer);
+        torContainers.add(newTorContainer);
     }
 
     private void sleep(int seconds) {

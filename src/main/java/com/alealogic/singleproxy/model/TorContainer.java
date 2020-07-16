@@ -25,6 +25,7 @@ public class TorContainer {
     private Socket controlSocket;
     private BufferedReader socketReader;
     private DataOutputStream socketWriter;
+    private boolean running;
 
     public TorContainer(String containerId, int torPort, int controlPort, int httpPort) {
         this.containerId = containerId;
@@ -40,6 +41,7 @@ public class TorContainer {
             socketWriter.close();
             dockerClient.stopContainerCmd(containerId).exec();
             dockerClient.removeContainerCmd(containerId).exec();
+            running = false;
         } catch (IOException ioException) {
             LOGGER.error(ioException.getMessage(), ioException);
         }
