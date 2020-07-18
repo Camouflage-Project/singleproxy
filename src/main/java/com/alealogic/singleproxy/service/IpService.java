@@ -47,6 +47,7 @@ public class IpService {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 LOGGER.error(e.getMessage(), e);
+                torContainer.shutDown(dockerClient);
 
                 countDownLatch.countDown();
             }
