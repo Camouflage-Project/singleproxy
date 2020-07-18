@@ -71,7 +71,7 @@ public class IpService {
         });
     }
 
-    public boolean setPublicIpAndCheckIfUnique(TorContainer torContainer) {
+    public boolean setPublicIpAndCheckIfValid(TorContainer torContainer) {
         OkHttpClient okHttpClient = getProxyClient(torContainer);
         Call call = okHttpClient.newCall(request);
 

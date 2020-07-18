@@ -79,29 +79,37 @@ public class TorManager {
     }
 
     private boolean setUniqueIp(TorContainer torContainer) {
+        if (!setValidPublicIpOrShutDownContainer(torContainer)) return false;
+
         while (ipIdToTorContainer.containsKey(torContainer.getIpId())) {
             LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
-            sleep(10);
+            sleep(3);
             changeIdentity(torContainer);
-            if (!ipService.setPublicIpAndCheckIfUnique(torContainer)){
-                torContainer.shutDown(dockerClient);
-                return false;
-            }
+            if (!setValidPublicIpOrShutDownContainer(torContainer)) return false;
 
             LOGGER.info("New ip is: " + torContainer.getIpAddressOfExitNode());
+        }
+
+        return true;
+    }
+
+    private boolean setValidPublicIpOrShutDownContainer(TorContainer torContainer) {
+        if (!ipService.setPublicIpAndCheckIfValid(torContainer)){
+            torContainer.shutDown(dockerClient);
+            return false;
         }
         return true;
     }
 
     private TorContainer getTorContainerWithUniqueIpId() {
         TorContainer torContainer;
-        boolean ipNotUnique = true;
+        boolean ipNotValid = true;
         do {
             torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
             LOGGER.info("listening on port: " + torContainer.getHttpPort());
             authenticateTor(torContainer);
-            if (setUniqueIp(torContainer)) ipNotUnique = false;
-        } while (ipNotUnique);
+            if (setUniqueIp(torContainer)) ipNotValid = false;
+        } while (ipNotValid);
 
         return torContainer;
     }
