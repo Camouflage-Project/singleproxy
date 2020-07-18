@@ -1,13 +1,18 @@
 package com.alealogic.singleproxy.model;
 
-import lombok.Data;
 import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
 
-@Data
 public class BlacklistRequest implements Serializable {
 
-    @NonNull
     private String ipId;
+
+    public String getIpId() {
+        return ipId;
+    }
+
+    public void setIpId(@NonNull String ipId) {
+        this.ipId = ipId;
+    }
 }
