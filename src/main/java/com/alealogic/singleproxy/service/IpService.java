@@ -2,6 +2,8 @@ package com.alealogic.singleproxy.service;
 
 import com.alealogic.singleproxy.model.TorContainer;
 import com.alealogic.singleproxy.util.Hasher;
+import com.alealogic.singleproxy.util.Utils;
+import com.github.dockerjava.api.DockerClient;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -25,9 +27,9 @@ public class IpService {
             .url("http://icanhazip.com/")
             .build();
 
-    public void setPublicIp(Collection<TorContainer> torContainers) {
+    public void setPublicIp(Collection<TorContainer> torContainers, DockerClient dockerClient) {
         CountDownLatch countDownLatch = new CountDownLatch(torContainers.size());
-        torContainers.forEach(torContainer -> this.setPublicIpAsync(torContainer, countDownLatch));
+        torContainers.forEach(torContainer -> this.setPublicIpAsync(torContainer, countDownLatch, dockerClient));
 
         try {
             countDownLatch.await();
@@ -37,7 +39,7 @@ public class IpService {
 
     }
 
-    private void setPublicIpAsync(TorContainer torContainer, CountDownLatch countDownLatch) {
+    private void setPublicIpAsync(TorContainer torContainer, CountDownLatch countDownLatch, DockerClient dockerClient) {
         OkHttpClient okHttpClient = getProxyClient(torContainer);
         Call call = okHttpClient.newCall(request);
 
@@ -51,7 +53,13 @@ public class IpService {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String ipAddressOfExitNode = response.body().string();
+                String ipAddressOfExitNode = response.body().string().strip();
+
+                if (!Utils.validIP(ipAddressOfExitNode)){
+                    LOGGER.warn("ip address of exit node not valid!");
+                    torContainer.shutDown(dockerClient);
+                }
+
                 torContainer.setIpAddressOfExitNode(ipAddressOfExitNode);
                 torContainer.setIpId(Hasher.getHash(ipAddressOfExitNode));
 
@@ -62,18 +70,25 @@ public class IpService {
         });
     }
 
-
-    public void setPublicIp(TorContainer torContainer) {
+    public boolean setPublicIpAndCheckIfUnique(TorContainer torContainer) {
         OkHttpClient okHttpClient = getProxyClient(torContainer);
         Call call = okHttpClient.newCall(request);
 
         try {
             Response response = call.execute();
-            String ipAddressOfExitNode = response.body().string();
+            String ipAddressOfExitNode = response.body().string().strip();
+
+            if (!Utils.validIP(ipAddressOfExitNode)){
+                LOGGER.error("invalid ip: " + ipAddressOfExitNode);
+                return false;
+            }
+
             torContainer.setIpAddressOfExitNode(ipAddressOfExitNode);
             torContainer.setIpId(Hasher.getHash(ipAddressOfExitNode));
+            return true;
         } catch (IOException ioException) {
             LOGGER.error(ioException.getMessage(), ioException);
+            return false;
         }
     }
 

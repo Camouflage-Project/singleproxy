@@ -67,56 +67,43 @@ public class TorManager {
         });
 
         torContainers.forEach(this::authenticateTor);
-        ipService.setPublicIp(torContainers);
+        ipService.setPublicIp(torContainers, dockerClient);
 
         torContainers.forEach(torContainer -> {
-            makeSureIpIsUnique(torContainer);
-            ipIdToTorContainer.put(torContainer.getIpId(), torContainer);
+            if (!setUniqueIp(torContainer)) return;
+            if (torContainer.isRunning()) ipIdToTorContainer.put(torContainer.getIpId(), torContainer);
         });
 
         LOGGER.info("created " + ipIdToTorContainer.size() + " tor containers");
         return torContainers;
     }
 
-    private void makeSureIpIsUnique(TorContainer torContainer) {
+    private boolean setUniqueIp(TorContainer torContainer) {
         while (ipIdToTorContainer.containsKey(torContainer.getIpId())) {
             LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
             sleep(10);
             changeIdentity(torContainer);
-            ipService.setPublicIp(torContainer);
+            if (!ipService.setPublicIpAndCheckIfUnique(torContainer)){
+                torContainer.shutDown(dockerClient);
+                return false;
+            }
+
             LOGGER.info("New ip is: " + torContainer.getIpAddressOfExitNode());
         }
+        return true;
     }
 
     private TorContainer getTorContainerWithUniqueIpId() {
-        TorContainer torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
-        LOGGER.info("listening on port: " + torContainer.getHttpPort());
-        authenticateTor(torContainer);
-        makeSureIpIsUnique(torContainer);
+        TorContainer torContainer;
+        boolean ipNotUnique = true;
+        do {
+            torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
+            LOGGER.info("listening on port: " + torContainer.getHttpPort());
+            authenticateTor(torContainer);
+            if (setUniqueIp(torContainer)) ipNotUnique = false;
+        } while (ipNotUnique);
 
         return torContainer;
-    }
-
-    public List<TorContainer> createManyTorContainers(int iterations) {
-        List<TorContainer> result = new ArrayList<>();
-
-        IntStream.range(0, iterations).forEach(i -> {
-            List<TorContainer> torContainers = new ArrayList<>();
-            IntStream.range(0, numberOfTorNodes).forEach(j -> {
-                TorContainer torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
-
-                LOGGER.info("listening on port: " + torContainer.getHttpPort());
-
-                torContainers.add(torContainer);
-            });
-
-            torContainers.forEach(this::authenticateTor);
-            ipService.setPublicIp(torContainers);
-            torContainers.forEach(torContainer -> torContainer.shutDown(dockerClient));
-            result.addAll(torContainers);
-        });
-
-        return result;
     }
 
     public void stopAndRemoveAllTorContainers() {

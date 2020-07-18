@@ -21,25 +21,6 @@ class TorManagerTest {
     IpService ipService;
 
     @Test
-    public void howManyIpsNewContainerIfCollision() {
-        ReflectionTestUtils.setField(torManager, "numberOfTorNodes", 100);
-
-        List<TorContainer> torContainers = torManager.createManyTorContainers(3);
-        Map<String, Integer> ipToFrequency = new HashMap<>();
-
-        torContainers.forEach(container -> {
-            String ipAddressOfExitNode = container.getIpAddressOfExitNode();
-            System.out.println(ipAddressOfExitNode);
-            if (ipToFrequency.containsKey(ipAddressOfExitNode))
-                ipToFrequency.put(ipAddressOfExitNode, ipToFrequency.get(ipAddressOfExitNode) + 1);
-            else
-                ipToFrequency.put(ipAddressOfExitNode, 1);
-        });
-
-        System.out.println(ipToFrequency);
-    }
-
-    @Test
     public void howManyIpsChangeIdentityIfCollision() {
         ReflectionTestUtils.setField(torManager, "numberOfTorNodes", 100);
 
