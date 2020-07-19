@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -210,7 +211,7 @@ public class TorManager {
         Set<String> blacklistedIpIds = blacklistedIpRepository.findAllByCustomerId(customer.getId()).stream().map(BlacklistedIp::getIpId).collect(Collectors.toSet());
 
         List<TorContainer> containers = new ArrayList<>(ipIdToTorContainer.values());
-        containers.removeIf(container -> blacklistedIpIds.contains(container.getIpId()));
+        containers.removeIf(container -> blacklistedIpIds.contains(container.getIpId()) || !container.isRunning());
         Collections.shuffle(containers);
 
         LinkedBlockingQueue<TorContainer> nodes = new LinkedBlockingQueue<>(containers.subList(0, Math.min(customer.getEnabledProxies(), containers.size())));
@@ -222,7 +223,7 @@ public class TorManager {
         Queue<TorContainer> nodes = customerToNodes.get(customer);
         nodes.removeIf(node -> node.getIpId().equals(ipId));
 
-        replaceIpId(customer, ipId);
+        CompletableFuture.runAsync(() -> replaceIpId(customer, ipId));
     }
 
     private void replaceIpId(Customer customer, String ipId) {
