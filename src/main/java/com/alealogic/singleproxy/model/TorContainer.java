@@ -42,8 +42,8 @@ public class TorContainer {
             dockerClient.stopContainerCmd(containerId).exec();
             dockerClient.removeContainerCmd(containerId).exec();
             running = false;
-        } catch (IOException ioException) {
-            LOGGER.error(ioException.getMessage(), ioException);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }
