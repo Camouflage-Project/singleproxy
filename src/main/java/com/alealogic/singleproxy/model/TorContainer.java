@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 
 @Data
@@ -35,15 +34,19 @@ public class TorContainer {
     }
 
     public void shutDown(DockerClient dockerClient) {
-        try {
-            controlSocket.close();
-            socketReader.close();
-            socketWriter.close();
-            dockerClient.stopContainerCmd(containerId).exec();
-            dockerClient.removeContainerCmd(containerId).exec();
-            running = false;
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+        if (running) {
+            try {
+                controlSocket.close();
+                socketReader.close();
+                socketWriter.close();
+                dockerClient.stopContainerCmd(containerId).exec();
+                dockerClient.removeContainerCmd(containerId).exec();
+                running = false;
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        } else {
+            LOGGER.warn("Trying to shut down a container that isn't running!");
         }
     }
 }

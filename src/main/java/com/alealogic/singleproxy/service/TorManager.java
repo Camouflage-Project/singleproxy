@@ -116,7 +116,9 @@ public class TorManager {
     }
 
     public void stopAndRemoveAllTorContainers() {
-        ipIdToTorContainer.values().forEach(container -> container.shutDown(dockerClient));
+        ipIdToTorContainer.values().forEach(container -> {
+            if (container.isRunning()) container.shutDown(dockerClient);
+        });
     }
 
     public void changeIdentity(TorContainer torContainer) {
