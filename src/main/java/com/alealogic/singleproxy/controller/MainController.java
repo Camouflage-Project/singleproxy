@@ -1,9 +1,7 @@
 package com.alealogic.singleproxy.controller;
 
 import com.alealogic.singleproxy.entity.Customer;
-import com.alealogic.singleproxy.model.BlacklistRequest;
-import com.alealogic.singleproxy.model.PortDto;
-import com.alealogic.singleproxy.model.PortRequest;
+import com.alealogic.singleproxy.model.*;
 import com.alealogic.singleproxy.service.AuthService;
 import com.alealogic.singleproxy.service.MainService;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +17,12 @@ public class MainController {
     public MainController(MainService mainService, AuthService authService) {
         this.mainService = mainService;
         this.authService = authService;
+    }
+
+    @PostMapping("proxy")
+    public ProxyDto getProxyInfo(@RequestBody ProxyRequest proxyRequest) {
+        Customer customer = authService.authenticateCustomer(proxyRequest.getApiKey());
+        return mainService.getProxyForCustomer(customer);
     }
 
     @PostMapping("port")
