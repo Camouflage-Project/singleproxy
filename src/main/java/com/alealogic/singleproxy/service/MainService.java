@@ -23,8 +23,8 @@ public class MainService {
     }
 
     public ProxyDto getProxyForCustomer(Customer customer) {
-        final var nextTorPortForCustomer = torManager.getNextTorPortForCustomer(customer);
-        return new ProxyDto("localhost", nextTorPortForCustomer.getPort(), nextTorPortForCustomer.getIpId());
+//        final var nextTorPortForCustomer = torManager.getNextTorPortForCustomer(customer);
+        return new ProxyDto("116.203.232.229", 8118, "something");
     }
 
     public PortDto getTorPortForCustomer(Customer customer) {
