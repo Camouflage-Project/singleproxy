@@ -16,6 +16,7 @@ public class Customer {
     private Long id;
     private String apiKey;
     private Integer enabledProxies;
+    private Long sessionId;
 
     public String getApiKey() {
         return apiKey;
