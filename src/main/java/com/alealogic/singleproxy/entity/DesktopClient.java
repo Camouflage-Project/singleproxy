@@ -22,4 +22,5 @@ public class DesktopClient {
     private String version;
     private LocalDateTime lastHeartbeat;
     private String lastIp;
+    private String ldflags;
 }
