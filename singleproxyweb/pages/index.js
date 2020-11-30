@@ -1,164 +1,124 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
-import Link from 'next/link'
-import { useEffect } from 'react';
+import React, {useEffect} from 'react';
+import initiateBackgroundEffect from '../src/background'
+import CssBaseline from "@material-ui/core/CssBaseline";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Link from "next/link";
+import Button from "@material-ui/core/Button";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import Copyright from "../src/Copyright";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+    '@global': {
+        ul: {
+            margin: 0,
+            padding: 0,
+            listStyle: 'none',
+        },
+    },
+    appBar: {
+        borderBottom: `1px solid ${theme.palette.divider}`,
+    },
+    toolbar: {
+        flexWrap: 'wrap',
+    },
+    toolbarTitle: {
+        flexGrow: 1,
+    },
+    link: {
+        margin: theme.spacing(1, 1.5),
+    },
+    heroContent: {
+        padding: theme.spacing(8, 0, 6),
+    },
+    cardHeader: {
+        backgroundColor:
+            theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
+    },
+    cardPricing: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'baseline',
+        marginBottom: theme.spacing(2),
+    },
+    footer: {
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginTop: theme.spacing(8),
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(3),
+        [theme.breakpoints.up('sm')]: {
+            paddingTop: theme.spacing(6),
+            paddingBottom: theme.spacing(6),
+        },
+    },
+    centered: {
+        justifyContent: 'center',
+        alignItems: "center",
+        direction: "column",
+        justify: "center"
+    }
+}));
 
 export default function Home() {
+    const classes = useStyles();
+
     useEffect(() => {
-        const canvas = document.getElementById("canvas1");
-        const ctx1 = canvas.getContext("2d");
-        ctx1.canvas.width  = window.innerWidth;
-        ctx1.canvas.height = window.innerHeight;
-        ctx1.fillStyle = 'black';
-        ctx1.strokeStyle = 'yellow';
-
-        const canvas2 = document.getElementById("canvas2");
-        const ctx2 = canvas2.getContext("2d");
-        ctx2.canvas.width  = window.innerWidth;
-        ctx2.canvas.height = window.innerHeight;
-        ctx2.fillStyle = 'blue';
-        ctx2.strokeStyle = 'red';
-
-        let particleArray = [];
-        let canvasCenterX = window.innerWidth/2;
-        let canvasCenterY = window.innerHeight/2;
-        let radius = window.innerWidth/5;
-        let angle = 0;
-
-// GET MOUSE POSITION ///////////////////////////////
-        const mouse = {
-            x: null,
-            y: null
-        }
-        window.addEventListener('mousemove', function(event){
-            mouse.x = event.x;
-            mouse.y = event.y;
-            //console.log(mouse);
-        });
-// SET MOUSE POSITION AS UNDEFINED EVERY 5 SEC(to prevent effect getting stuck in corners when mouse leaves window)//////
-        setInterval(function(){
-            mouse.x = undefined;
-            mouse.y = undefined;
-        }, 10);
-
-// CREATE PARTICLE OBJECT ///////////////////
-        class Particle {
-            constructor(x, y, size, color, weight){
-                this.x = x;
-                this.y = y;
-                this.size = size;
-                this.minSize = size;
-                this.color = color;
-                this.weight = weight;
-            }
-            draw(){
-                ctx1.beginPath();
-                ctx1.arc(this.x,this.y,this.size,0,Math.PI * 2, false);
-                ctx1.fill();
-                ctx1.closePath();
-            }
-            update(){
-                // autopilot when mouse leaves canvas
-                if ((mouse.x == undefined) && (mouse.y == undefined)){
-                    let newX  = radius * 2 * Math.cos(angle * (Math.PI/180));
-                    let newY = radius * 0.9 * Math.sin(angle * (Math.PI/90));
-                    mouse.x = newX + canvasCenterX;
-                    mouse.y = newY + canvasCenterY;
-                }
-
-                angle+= (Math.random() * 0.020) + 0.001;//0.001 - 0.021
-                this.size-=0.15;
-                if (this.size < 0) {
-                    this.x = (mouse.x + ((Math.random() * 20) - 10));
-                    this.y = (mouse.y + ((Math.random() * 20) - 10));
-                    this.size = (Math.random()*25);
-                    this.weight = (Math.random() * 2) + 0.1;
-                }
-                this.y += this.weight;
-                this.weight += 0.05;
-
-                // if it reaches bottom bounce
-                if (this.y > canvas.height-this.size){
-                    this.weight *= -0.5;
-                };
-            }
-        }
-
-        function init() {
-            particleArray = [];
-            for (let i = 0; i < 150; i++){
-                let size = (Math.random() * 10) + 5;
-                let x = Math.random() * (innerWidth - size * 2) + size;
-                let y = Math.random() * (innerHeight - size * 2) + size;
-                let color = 'black';
-                let weight = 1;
-                particleArray.push(new Particle(x, y, size, color, weight));
-            }
-
-        }
-
-        function animate(){
-            ctx1.clearRect(0, 0, canvas.width, canvas.height);
-            ctx2.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particleArray.length; i++) {
-                particleArray[i].update();
-                particleArray[i].draw();
-            }
-            connect();
-            requestAnimationFrame(animate);
-        }
-        init();
-        animate();
-
-// check if particles are close enough to draw line between them
-        function connect() {
-            let opacityValue = 1;
-            for (let a = 0; a < particleArray.length; a++) {
-                for (let b = a; b < particleArray.length; b++){
-                    let distance = Math.sqrt(((particleArray[a].x - particleArray[b].x) * (particleArray[a].x - particleArray[b].x))
-                        +   ((particleArray[a].y - particleArray[b].y) * (particleArray[a].y - particleArray[b].y)));
-                    if  (distance < 110)
-                    {
-                        opacityValue = 1-(distance/100);
-                        ctx2.strokeStyle='rgba(0,0,0,' + opacityValue +')';
-                        ctx2.beginPath();
-                        ctx2.lineWidth = 2;
-                        ctx2.moveTo(particleArray[a].x, particleArray[a].y);
-                        ctx2.lineTo(particleArray[b].x, particleArray[b].y);
-                        ctx2.stroke();
-
-                    }
-                }
-            }
-        }
-        window.addEventListener('resize', function(){
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            canvasCenterX = window.innerWidth/2;
-            canvasCenterY = window.innerHeight/2;
-            radius = window.innerWidth/5;
-            ctx1.canvas.width  = window.innerWidth;
-            ctx1.canvas.height = window.innerHeight;
-            ctx2.canvas.width  = window.innerWidth;
-            ctx2.canvas.height = window.innerHeight;
-            init();
-        })
+        initiateBackgroundEffect();
     });
 
   return (
       <>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <defs>
-          <filter id="goo">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
-            <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
-          </filter>
-        </defs>
-      </svg>
-      <canvas id="canvas1"></canvas>
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <defs>
+              <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+              </filter>
+            </defs>
+          </svg>
+          <canvas id="canvas1"/>
+          <canvas id="canvas2"/>
 
-      <canvas id="canvas2"></canvas>
+          <CssBaseline />
+          <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
+              <Toolbar className={classes.toolbar}>
+                  <Typography variant="h5" color="inherit" noWrap className={classes.toolbarTitle}>
+                      AleaLogic
+                  </Typography>
+                  <Link href="/login"><a>
+                      <Button href="#" color="primary" variant="outlined" className={classes.link}>
+                          Login
+                      </Button>
+                  </a></Link>
+              </Toolbar>
+          </AppBar>
+          {/* Hero unit */}
+          <Container maxWidth="sm" component="main" className={classes.heroContent}>
+              <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                  AleaLogic
+              </Typography>
+              <Typography variant="h5" align="center" color="textSecondary" component="p">
+                  In just two clicks, you can start earning money by sharing your Internet bandwidth.
+              </Typography>
+          </Container>
+          {/* End hero unit */}
+          <Grid container maxWidth="md" component="main" className={classes.centered}>
+              <Button variant={"contained"} color="primary">
+                  Here's how
+              </Button>
+          </Grid>
+          {/* Footer */}
+          <Container maxWidth="md" component="footer" className={classes.footer}>
+              <Box mt={5}>
+                  <Copyright />
+              </Box>
+          </Container>
+          {/* End footer */}
       </>
   )
 }
