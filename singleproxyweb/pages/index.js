@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     toolbarTitle: {
         flexGrow: 1,
     },
+    centerTitle: {
+        padding: theme.spacing(0, 0, 2),
+    },
     link: {
         margin: theme.spacing(1, 1.5),
     },
@@ -88,7 +91,7 @@ export default function Home() {
           <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
               <Toolbar className={classes.toolbar}>
                   <Typography variant="h5" color="inherit" noWrap className={classes.toolbarTitle}>
-                      AleaLogic
+                      A L
                   </Typography>
                   <Link href="/login"><a>
                       <Button href="#" color="primary" variant="outlined" className={classes.link}>
@@ -97,28 +100,33 @@ export default function Home() {
                   </a></Link>
               </Toolbar>
           </AppBar>
-          {/* Hero unit */}
+          <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justify="center"
+              style={{ minHeight: '70vh' }}
+          >
           <Container maxWidth="sm" component="main" className={classes.heroContent}>
-              <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+              <Typography className={classes.centerTitle} component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
                   AleaLogic
               </Typography>
               <Typography variant="h5" align="center" color="textSecondary" component="p">
-                  In just two clicks, you can start earning money by sharing your Internet bandwidth.
+                  In just two clicks, you can start earning money by sharing your Internet bandwidth or your graphics card.
               </Typography>
           </Container>
-          {/* End hero unit */}
           <Grid container maxWidth="md" component="main" className={classes.centered}>
-              <Button variant={"contained"} color="primary">
+              <Button variant={"outlined"} color="primary" size="large">
                   Here's how
               </Button>
           </Grid>
-          {/* Footer */}
+          </Grid>
           <Container maxWidth="md" component="footer" className={classes.footer}>
               <Box mt={5}>
                   <Copyright />
               </Box>
           </Container>
-          {/* End footer */}
       </>
   )
 }
