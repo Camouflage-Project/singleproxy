@@ -113,7 +113,7 @@ export default function Home() {
                   AleaLogic
               </Typography>
               <Typography variant="h5" align="center" color="textSecondary" component="p">
-                  In just two clicks, you can start earning money by sharing your Internet bandwidth or your graphics card.
+                  Earn money by sharing your Internet bandwidth or your graphics card in just two clicks.
               </Typography>
           </Container>
           <Grid container maxWidth="md" component="main" className={classes.centered}>
