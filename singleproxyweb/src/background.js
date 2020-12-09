@@ -139,4 +139,15 @@ const initiateBackgroundEffect = () => {
     })
 };
 
-export default initiateBackgroundEffect;
+const shouldShowBackgroundAnimation = () => {
+    const height = window.innerHeight;
+    const width = window.innerWidth;
+
+    console.log(height);
+    console.log(width)
+    if (height > 500 && width > 800) {
+        initiateBackgroundEffect()
+    }
+};
+
+export default shouldShowBackgroundAnimation;

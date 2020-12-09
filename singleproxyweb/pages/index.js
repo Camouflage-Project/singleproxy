@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import initiateBackgroundEffect from '../src/background'
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,6 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Copyright from "../src/Copyright";
 import {makeStyles} from "@material-ui/core/styles";
+import shouldShowBackgroundAnimation from "../src/background";
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
@@ -70,7 +70,7 @@ export default function Home() {
     const classes = useStyles();
 
     useEffect(() => {
-        initiateBackgroundEffect();
+        shouldShowBackgroundAnimation()
     });
 
   return (
