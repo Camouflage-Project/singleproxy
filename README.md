@@ -26,3 +26,10 @@ docker build --tag onlyprivoxy:1.0 .
 docker run -d --network host onlyprivoxy:1.0 8118
 
 start and call zaproxy like mentioned above
+
+
+
+
+
+start frontend
+sudo NODE_ENV=production node server.js
