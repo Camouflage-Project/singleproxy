@@ -11,6 +11,7 @@ import Box from "@material-ui/core/Box";
 import Copyright from "../src/Copyright";
 import {makeStyles} from "@material-ui/core/styles";
 import shouldShowBackgroundAnimation from "../src/background";
+import {AlertDialog} from "../src/AlertDialog";
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
@@ -69,6 +70,16 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
     const classes = useStyles();
 
+    const [open, setOpen] = React.useState(false);
+
+    const openAlertDialog = () => {
+        setOpen(true);
+    };
+
+    const closeAlertDialog = () => {
+        setOpen(false);
+    };
+
     useEffect(() => {
         shouldShowBackgroundAnimation()
     });
@@ -117,9 +128,10 @@ export default function Home() {
               </Typography>
           </Container>
           <Grid container maxWidth="md" component="main" className={classes.centered}>
-              <Button variant={"outlined"} color="primary" size="large">
+              <Button onClick={openAlertDialog} variant={"outlined"} color="primary" size="large">
                   Here's how
               </Button>
+              <AlertDialog open={open} handleClose={closeAlertDialog}/>
           </Grid>
           </Grid>
           <Container maxWidth="md" component="footer" className={classes.footer}>

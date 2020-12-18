@@ -198,5 +198,5 @@ export default function dashboard() {
 }
 
 const loggedIn = () => {
-    return false;
+    return true;
 };
