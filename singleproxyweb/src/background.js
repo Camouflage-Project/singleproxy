@@ -27,7 +27,6 @@ const initiateBackgroundEffect = () => {
     window.addEventListener('mousemove', function(event){
         mouse.x = event.x;
         mouse.y = event.y;
-        //console.log(mouse);
     });
 // SET MOUSE POSITION AS UNDEFINED EVERY 5 SEC(to prevent effect getting stuck in corners when mouse leaves window)//////
     setInterval(function(){
@@ -143,8 +142,6 @@ const shouldShowBackgroundAnimation = () => {
     const height = window.innerHeight;
     const width = window.innerWidth;
 
-    console.log(height);
-    console.log(width)
     if (height > 500 && width > 800) {
         initiateBackgroundEffect()
     }

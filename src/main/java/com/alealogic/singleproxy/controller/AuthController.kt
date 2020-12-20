@@ -1,19 +1,18 @@
 package com.alealogic.singleproxy.controller
 
 import com.alealogic.singleproxy.model.ApiKeyLoginRequest
-import com.alealogic.singleproxy.model.VerifyTokenRequest
 import com.alealogic.singleproxy.service.AuthService
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
-@CrossOrigin(origins = ["*"])
+@CrossOrigin(origins = ["http://localhost:8080"])
 class AuthController(private val authService: AuthService) {
 
     @PostMapping("/api-key-login")
     fun loginWithApiKey(@RequestBody apiKeyLoginRequest: ApiKeyLoginRequest) =
         authService.loginWithApiKey(apiKeyLoginRequest.apiKey)
+
+    @GetMapping("/token")
+    fun getToken(): Nothing = authService.getToken()
 
 }

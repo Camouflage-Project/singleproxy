@@ -14,4 +14,6 @@ class AuthService(private val customerRepository: CustomerRepository) {
 
     fun loginWithApiKey(apiKey: String?) =
         customerRepository.findCustomerByApiKey(apiKey)?.sessionToken ?: throw ApiKeyAuthenticationException()
+
+    fun getToken(): Nothing = TODO()
 }

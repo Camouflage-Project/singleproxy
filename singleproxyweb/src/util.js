@@ -12,3 +12,33 @@ export function getSessionToken() {
     }
     return null;
 }
+
+export function getOS() {
+    let userAgent = window.navigator.userAgent,
+        platform = window.navigator.platform,
+        macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K', 'darwin'],
+        windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+        iosPlatforms = ['iPhone', 'iPad', 'iPod']
+
+    if (macosPlatforms.indexOf(platform) !== -1) {
+        return os.macOs
+    } else if (iosPlatforms.indexOf(platform) !== -1) {
+        return os.iOs
+    } else if (windowsPlatforms.indexOf(platform) !== -1) {
+        return os.windows
+    } else if (/Android/.test(userAgent)) {
+        return os.android
+    } else if (/Linux/.test(platform)) {
+        return os.linux
+    }
+
+    return os;
+}
+
+export const os = {
+    macOs: "MacOS",
+    iOs: "iOS",
+    windows: "Windows",
+    android: "Android",
+    linux: "Linux"
+}
