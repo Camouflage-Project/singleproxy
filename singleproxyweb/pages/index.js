@@ -39,6 +39,10 @@ const useStyles = makeStyles((theme) => ({
     heroContent: {
         padding: theme.spacing(0, 0, 6),
     },
+    description:{
+      marginLeft:"20px",
+      marginRight:"20px"
+    },
     cardHeader: {
         backgroundColor:
             theme.palette.type === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
@@ -123,7 +127,7 @@ export default function Home() {
               <Typography className={classes.centerTitle} component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
                   AleaLogic
               </Typography>
-              <Typography variant="h5" align="center" color="textSecondary" component="p">
+              <Typography variant="h5" align="center" color="textSecondary" component="p" className={classes.description}>
                   Earn money by sharing your Internet bandwidth or your graphics card in just two clicks.
               </Typography>
           </Container>
