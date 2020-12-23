@@ -138,7 +138,7 @@ const initiateBackgroundEffect = () => {
     })
 };
 
-const shouldShowBackgroundAnimation = () => {
+const showBackgroundEffect = () => {
     const height = window.innerHeight;
     const width = window.innerWidth;
 
@@ -147,4 +147,4 @@ const shouldShowBackgroundAnimation = () => {
     }
 };
 
-export default shouldShowBackgroundAnimation;
+export default showBackgroundEffect;

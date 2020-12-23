@@ -34,14 +34,16 @@ public class TorManager {
     @Value("${number.tor.nodes}")
     private Integer numberOfTorNodes;
     private final IpService ipService;
+    private final PortService portService;
     private final BlacklistedIpRepository blacklistedIpRepository;
     private int portToAssign = 10060;
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
     private final Map<Customer, Queue<TorContainer>> customerToNodes = new HashMap<>();
     private final Map<String, TorContainer> ipIdToTorContainer = new HashMap<>();
 
-    public TorManager(IpService ipService, BlacklistedIpRepository blacklistedIpRepository) {
+    public TorManager(IpService ipService, PortService portService, BlacklistedIpRepository blacklistedIpRepository) {
         this.ipService = ipService;
+        this.portService = portService;
         this.blacklistedIpRepository = blacklistedIpRepository;
     }
 
@@ -60,7 +62,7 @@ public class TorManager {
         List<TorContainer> torContainers = new ArrayList<>();
 
         IntStream.range(0, numberOfTorNodes).forEach(i -> {
-            TorContainer torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
+            TorContainer torContainer = startTorContainer(portService.getThreeAvailablePorts().toArray(new Integer[0]));
 
             LOGGER.info("listening on port: " + torContainer.getHttpPort());
 
@@ -106,7 +108,7 @@ public class TorManager {
         TorContainer torContainer;
         boolean ipNotValid = true;
         do {
-            torContainer = startTorContainer(getThreeAvailablePorts().toArray(new Integer[0]));
+            torContainer = startTorContainer(portService.getThreeAvailablePorts().toArray(new Integer[0]));
             LOGGER.info("listening on port: " + torContainer.getHttpPort());
             authenticateTor(torContainer);
             if (setUniqueIp(torContainer)) ipNotValid = false;
@@ -180,33 +182,6 @@ public class TorManager {
         torContainer.setSocketReader(socketReader);
         torContainer.setSocketWriter(socketWriter);
         torContainer.setRunning(true);
-    }
-
-    private boolean portIsAvailable(int port) {
-        Socket s = null;
-        try {
-            s = new Socket("localhost", port);
-            return false;
-        } catch (IOException e) {
-            return true;
-        } finally {
-            if(s != null){
-                try {
-                    s.close();
-                } catch (IOException e) {
-                    LOGGER.error(e.getMessage(), e);
-                }
-            }
-        }
-    }
-
-    public List<Integer> getThreeAvailablePorts() {
-        List<Integer> availablePorts = new ArrayList<>();
-        while (availablePorts.size() < 3) {
-            int port = portToAssign++;
-            if (portIsAvailable(port)) availablePorts.add(port);
-        }
-        return availablePorts;
     }
 
     private Queue<TorContainer> getNodesForCustomer(Customer customer) {

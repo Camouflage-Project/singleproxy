@@ -5,7 +5,7 @@ import com.alealogic.singleproxy.service.AuthService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:8080"])
+@CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000"])
 class AuthController(private val authService: AuthService) {
 
     @PostMapping("/api-key-login")
@@ -13,6 +13,6 @@ class AuthController(private val authService: AuthService) {
         authService.loginWithApiKey(apiKeyLoginRequest.apiKey)
 
     @GetMapping("/token")
-    fun getToken(): Nothing = authService.getToken()
+    fun getToken(@CookieValue("token") token: String?): String = authService.getToken(token)
 
 }

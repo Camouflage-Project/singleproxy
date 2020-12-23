@@ -15,5 +15,11 @@ class AuthService(private val customerRepository: CustomerRepository) {
     fun loginWithApiKey(apiKey: String?) =
         customerRepository.findCustomerByApiKey(apiKey)?.sessionToken ?: throw ApiKeyAuthenticationException()
 
-    fun getToken(): Nothing = TODO()
+    fun getToken(token: String?): String =
+        customerRepository.findCustomerBySessionToken(token)?.sessionToken
+            ?: Customer().apply {
+                apiKey = UUID.randomUUID().toString()
+                sessionToken = UUID.randomUUID().toString()
+            }.let { customerRepository.save(it) }.sessionToken!!
+
 }

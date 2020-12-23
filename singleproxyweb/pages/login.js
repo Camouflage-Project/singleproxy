@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from 'axios';
-import {setSessionToken} from "../src/util";
+import {baseUrl, setSessionTokenInCookie} from "../src/util";
 import {useRouter} from "next/router";
 
 function Copyright() {
@@ -50,9 +50,9 @@ export default function login() {
     const classes = useStyles();
 
     const submit = () => {
-        axios.post("http://localhost:8080/api/api-key-login", {"apiKey": key})
+        axios.post(baseUrl + "/api-key-login", {"apiKey": key})
             .then(res => {
-                setSessionToken(res.data)
+                setSessionTokenInCookie(res.data)
                 setLoginError(false)
                 router.push('/dashboard', undefined, {shallow: true})
             })

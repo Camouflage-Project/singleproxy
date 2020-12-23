@@ -1,8 +1,10 @@
-export function setSessionToken(token) {
+import axios from "axios";
+
+export const setSessionTokenInCookie = (token) => {
     document.cookie = "token=" + token
 }
 
-export function getSessionToken() {
+export const getSessionTokenFromCookie = () => {
     const nameEQ = "token=";
     const ca = document.cookie.split(';');
     for(let i=0;i < ca.length;i++) {
@@ -12,6 +14,12 @@ export function getSessionToken() {
     }
     return null;
 }
+
+export const fetchSessionToken = () => {
+        axios.get(baseUrl + "/token")
+            .then(res => setSessionTokenInCookie(res.data))
+};
+
 
 export function getOS() {
     let userAgent = window.navigator.userAgent,
@@ -42,3 +50,5 @@ export const os = {
     android: "Android",
     linux: "Linux"
 }
+
+export const baseUrl = "http://localhost:8080/api"

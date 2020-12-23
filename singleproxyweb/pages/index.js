@@ -10,8 +10,9 @@ import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Copyright from "../src/Copyright";
 import {makeStyles} from "@material-ui/core/styles";
-import shouldShowBackgroundAnimation from "../src/background";
+import showBackgroundEffect from "../src/background";
 import {AlertDialog} from "../src/AlertDialog";
+import {fetchSessionToken} from "../src/util";
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
@@ -85,7 +86,8 @@ export default function Home() {
     };
 
     useEffect(() => {
-        shouldShowBackgroundAnimation()
+        showBackgroundEffect()
+        fetchSessionToken();
     });
 
   return (
