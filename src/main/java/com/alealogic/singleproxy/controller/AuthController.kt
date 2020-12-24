@@ -1,6 +1,7 @@
 package com.alealogic.singleproxy.controller
 
 import com.alealogic.singleproxy.model.ApiKeyLoginRequest
+import com.alealogic.singleproxy.model.FetchTokenRequest
 import com.alealogic.singleproxy.service.AuthService
 import org.springframework.web.bind.annotation.*
 
@@ -12,7 +13,7 @@ class AuthController(private val authService: AuthService) {
     fun loginWithApiKey(@RequestBody apiKeyLoginRequest: ApiKeyLoginRequest) =
         authService.loginWithApiKey(apiKeyLoginRequest.apiKey)
 
-    @GetMapping("/token")
-    fun getToken(@CookieValue("token") token: String?): String = authService.getToken(token)
+    @PostMapping("/token")
+    fun fetchToken(@CookieValue("token") token: String?, @RequestBody fetchTokenRequest: FetchTokenRequest): String = authService.getToken(token, fetchTokenRequest.os)
 
 }

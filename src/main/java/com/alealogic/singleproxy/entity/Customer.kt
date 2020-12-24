@@ -1,5 +1,6 @@
 package com.alealogic.singleproxy.entity
 
+import com.alealogic.singleproxy.model.Os
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -13,4 +14,5 @@ class Customer {
     var apiKey: String? = null
     var enabledProxies: Int? = null
     var sessionToken: String? = null
+    var os: Os? = null
 }

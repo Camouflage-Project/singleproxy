@@ -16,7 +16,7 @@ export const getSessionTokenFromCookie = () => {
 }
 
 export const fetchSessionToken = () => {
-        axios.get(baseUrl + "/token")
+        axios.post(baseUrl + "/token", {"os": getOS()})
             .then(res => setSessionTokenInCookie(res.data))
 };
 
@@ -44,11 +44,11 @@ export function getOS() {
 }
 
 export const os = {
-    macOs: "MacOS",
-    iOs: "iOS",
-    windows: "Windows",
-    android: "Android",
-    linux: "Linux"
+    macOs: "MACOS",
+    iOs: "IOS",
+    windows: "WINDOWS",
+    android: "ANDROID",
+    linux: "LINUX"
 }
 
 export const baseUrl = "http://localhost:8080/api"
