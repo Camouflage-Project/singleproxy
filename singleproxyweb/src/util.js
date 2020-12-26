@@ -16,8 +16,8 @@ export const getSessionTokenFromCookie = () => {
 }
 
 export const fetchSessionToken = () => {
-        axios.post(baseUrl + "/token", {"os": getOS()})
-            .then(res => setSessionTokenInCookie(res.data))
+    axios.post(baseUrl + "/token", {"os": getOS()}, {withCredentials: true})
+        .then(res => setSessionTokenInCookie(res.data));
 };
 
 

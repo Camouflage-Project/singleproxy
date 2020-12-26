@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service
 import kotlin.math.log
 
 @Service
-class RegistrationService(
-    private val desktopClientRepository: DesktopClientRepository,
-    private val logger: Logger = LoggerFactory.getLogger(RegistrationService::class.java)) {
+class RegistrationService(private val desktopClientRepository: DesktopClientRepository) {
 
     fun registerDesktopClient(desktopClientKey: String) {
         val desktopClient = desktopClientRepository.findByKey(desktopClientKey)
