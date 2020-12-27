@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query
 
 interface ReleaseRepository : JpaRepository<Release?, Long?> {
 
-    @Query("select * from release order by id desc limit 1")
+    @Query("select * from release order by id desc limit 1", nativeQuery = true)
     fun getLatestRelease(): Release
 
     fun findById(id: Long): Release

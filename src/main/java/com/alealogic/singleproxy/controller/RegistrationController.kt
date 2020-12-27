@@ -11,6 +11,6 @@ class RegistrationController(private val registrationService: RegistrationServic
 
     @PostMapping("register-desktop-client")
     fun registerDesktopClient(@RequestBody keyRequest: KeyRequest) {
-        registrationService.registerDesktopClient(keyRequest.key)
+        registrationService.registerDesktopClient(keyRequest.key!!)
     }
 }

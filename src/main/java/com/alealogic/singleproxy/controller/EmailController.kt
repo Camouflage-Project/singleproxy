@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController
 class EmailController(private val emailService: EmailService) {
 
     @PostMapping("/email")
-    fun submitEmail(@RequestBody emailRequest: EmailRequest) = emailService.submitEmail(emailRequest.email)
+    fun submitEmail(@RequestBody emailRequest: EmailRequest) = emailService.submitEmail(emailRequest.email!!)
 
 }
