@@ -15,6 +15,6 @@ class DownloadController(private val fileService: FileService) {
     @GetMapping(value = ["alealogic-release"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
     @Throws(IOException::class)
     fun getBinary(@CookieValue("token") sessionToken: String): ByteArray {
-        return fileService.getBinaryForCustomer(sessionToken)
+        return fileService.getBinaryBySessionToken(sessionToken)
     }
 }

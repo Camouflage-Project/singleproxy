@@ -8,6 +8,5 @@ import java.io.Serializable;
 public class BinaryRequest implements Serializable {
 
     private String key;
-    private String binaryName;
 
 }

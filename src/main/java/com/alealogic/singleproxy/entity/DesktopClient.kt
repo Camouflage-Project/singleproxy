@@ -14,8 +14,11 @@ class DesktopClient {
     var key: String? = null
     var customerId: Long? = null
     var registered = false
-    var version: String? = null
+    var releaseId: Long? = null
     var lastHeartbeat: LocalDateTime? = null
     var lastIp: String? = null
     var ldflags: String? = null
+    var updateToReleaseId: Long? = null
+    var obsolete: Boolean = false
+    var updateInitiatorDesktopClientId: Long? = null
 }

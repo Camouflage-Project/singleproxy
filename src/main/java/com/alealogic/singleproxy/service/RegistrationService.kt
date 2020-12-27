@@ -18,5 +18,9 @@ class RegistrationService(private val desktopClientRepository: DesktopClientRepo
                 .also { desktopClientRepository.save(it) }
         } else throw IllegalStateException("no DesktopClient found in db with desktopClientKey $desktopClientKey")
 
+        desktopClientRepository
+            .findByUpdateInitiatorDesktopClientId(desktopClient.updateInitiatorDesktopClientId)
+            ?.apply { obsolete = true }
+            ?.also { desktopClientRepository.save(it) }
     }
 }

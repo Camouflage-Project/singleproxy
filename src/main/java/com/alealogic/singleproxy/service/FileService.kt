@@ -1,9 +1,11 @@
 package com.alealogic.singleproxy.service
 
+import com.alealogic.singleproxy.entity.Customer
 import com.alealogic.singleproxy.entity.DesktopClient
 import com.alealogic.singleproxy.model.Os
 import com.alealogic.singleproxy.repository.CustomerRepository
 import com.alealogic.singleproxy.repository.DesktopClientRepository
+import com.alealogic.singleproxy.repository.ReleaseRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -20,14 +22,19 @@ class FileService(
     private val logger: Logger = LoggerFactory.getLogger(FileService::class.java),
     private val customerRepository: CustomerRepository,
     private val desktopClientRepository: DesktopClientRepository,
+    private val releaseRepository: ReleaseRepository,
     private val portService: PortService,
     @Value("\${desktopclient.directory}") private val desktopClientDirectory: String
 ) {
 
-    fun getBinaryForCustomer(sessionToken: String): ByteArray {
+    fun getBinaryBySessionToken(sessionToken: String): ByteArray {
         val customer = customerRepository.findCustomerBySessionToken(sessionToken)
             ?: throw IllegalStateException("no customer found in db with sessionToken $sessionToken")
 
+        return getBinaryForCustomer(customer)
+    }
+
+    fun getBinaryForCustomer(customer: Customer, updateInitiatorDesktopClientId: Long? = null): ByteArray {
         val desktopClientKey = UUID.randomUUID().toString()
         val nextAvailablePort = portService.nextAvailablePort
         val ldflags = "\"-X desktopClient/internal.Key=$desktopClientKey -X desktopClient/internal.InjectedRemoteSshPort=$nextAvailablePort\""
@@ -35,8 +42,9 @@ class FileService(
         DesktopClient().apply {
             key = desktopClientKey
             customerId = customer.id
-            version = getReleaseName()
+            releaseId = getReleaseId()
             this.ldflags = ldflags
+            this.updateInitiatorDesktopClientId = updateInitiatorDesktopClientId
         }.also { desktopClientRepository.save(it) }
 
         buildDesktopClient(ldflags, customer.os!!)
@@ -69,5 +77,6 @@ class FileService(
         }
     }
 
-    private fun getReleaseName() = "SingleProxyDesktopClient_release_1"
+    private fun getReleaseId() = releaseRepository.getLatestRelease().id
+    private fun getReleaseName() = releaseRepository.getLatestRelease().name
 }

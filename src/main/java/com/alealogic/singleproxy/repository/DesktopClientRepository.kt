@@ -6,4 +6,6 @@ import java.util.*
 
 interface DesktopClientRepository : JpaRepository<DesktopClient?, Long?> {
     fun findByKey(key: String?): DesktopClient?
+
+    fun findByUpdateInitiatorDesktopClientId(id: Long?): DesktopClient?
 }
