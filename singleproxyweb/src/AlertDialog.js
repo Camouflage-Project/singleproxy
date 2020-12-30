@@ -5,7 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import {getOS, os} from "./util";
+import {baseUrl, generateRandomString, getOS, getSessionTokenFromCookie, os} from "./util";
 import {Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -27,8 +27,15 @@ export const AlertDialog = (props) => {
     const [content, setContent] = React.useState("")
     const [unix, setUnix] = React.useState(false)
     const [windows, setWindows] = React.useState(false)
+    const [unixInstallCommand, setUnixInstallCommand] = React.useState("loading...")
 
-    const unixInstallContent = "To install, just copy and paste the below line into a terminal window and press enter. Then, proceed to your dashboard."
+    const fileName = "release_" + generateRandomString()
+    useEffect(() => {
+        const token = getSessionTokenFromCookie()
+        setUnixInstallCommand(`curl -s ${baseUrl}/install?id=${token} | sudo bash`)
+    }, []);
+
+    const unixInstallContent = "To install, just copy and paste the below code into a terminal window and press enter. Then, proceed to your dashboard."
 
     useEffect(() => {
         let currentOs = getOS();
@@ -36,7 +43,7 @@ export const AlertDialog = (props) => {
             setTitle("Linux installation")
             setContent(unixInstallContent)
             setUnix(true)
-        }else if (currentOs === os.windows) {
+        }else if (currentOs === os.macOs) {
             setTitle("MacOS installation")
             setContent(unixInstallContent)
             setUnix(true)
@@ -65,18 +72,18 @@ export const AlertDialog = (props) => {
                     </DialogContentText>
                     {unix
                         ? <DialogContentText id="alert-dialog-description">
-                            <Typography className={classes.codeSnippet}>curl http://localhost:8080/api/alealogic-release | sudo bash</Typography>
+                            <Typography className={classes.codeSnippet}>{unixInstallCommand}</Typography>
                         </DialogContentText>
                         : null}
                 </DialogContent>
                 {windows
                     ? <DialogActions className={classes.download}>
-                        <Button href={"http://localhost:8080/api/alealogic-release"} variant="outlined" onClick={props.handleClose} color="primary" autoFocus>
+                        <Button href={baseUrl + "/alealogic-release"} variant="outlined" onClick={props.handleClose} color="primary" autoFocus>
                             Download
                         </Button>
                     </DialogActions>
                     : <DialogActions className={classes.download}>
-                        <Button href={"http://localhost:8080/api/alealogic-release"} variant="outlined" onClick={props.handleClose} color="primary" autoFocus>
+                        <Button href={baseUrl + "/alealogic-release"} variant="outlined" onClick={props.handleClose} color="primary" autoFocus>
                             Download
                         </Button>
                     </DialogActions>}

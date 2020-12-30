@@ -4,10 +4,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class TestController {
+class ScriptController {
 
-    @GetMapping("greeting")
-    fun greeting(): String = "hey"
-
-
+    @GetMapping("script")
+    fun script(): String = ""
 }

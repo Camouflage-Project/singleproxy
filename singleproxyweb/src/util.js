@@ -1,4 +1,5 @@
 import axios from "axios";
+import {v4} from "uuid";
 
 export const setSessionTokenInCookie = (token) => {
     document.cookie = "token=" + token
@@ -21,7 +22,7 @@ export const fetchSessionToken = () => {
 };
 
 
-export function getOS() {
+export const getOS = () => {
     let userAgent = window.navigator.userAgent,
         platform = window.navigator.platform,
         macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K', 'darwin'],
@@ -42,6 +43,8 @@ export function getOS() {
 
     return os;
 }
+
+export const generateRandomString = () => v4().substring(30)
 
 export const os = {
     macOs: "MACOS",

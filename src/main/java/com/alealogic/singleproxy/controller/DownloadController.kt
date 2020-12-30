@@ -2,10 +2,7 @@ package com.alealogic.singleproxy.controller
 
 import com.alealogic.singleproxy.service.FileService
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.CookieValue
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.io.IOException
 
 @RestController
@@ -14,7 +11,12 @@ class DownloadController(private val fileService: FileService) {
 
     @GetMapping(value = ["alealogic-release"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
     @Throws(IOException::class)
-    fun getBinary(@CookieValue("token") sessionToken: String): ByteArray {
-        return fileService.getBinaryBySessionToken(sessionToken)
-    }
+    fun getBinary(@CookieValue("token") sessionToken: String): ByteArray =
+        fileService.getBinaryBySessionToken(sessionToken)
+
+
+    @GetMapping("install")
+    fun getInstallationScript(@RequestParam("id") sessionToken: String): String =
+        fileService.getInstallationScript(sessionToken)
+
 }
