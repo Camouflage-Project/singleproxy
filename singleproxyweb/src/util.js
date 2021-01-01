@@ -1,9 +1,6 @@
 import axios from "axios";
-import {v4} from "uuid";
 
-export const setSessionTokenInCookie = (token) => {
-    document.cookie = "token=" + token
-}
+export const setSessionTokenInCookie = token => document.cookie = "token=" + token
 
 export const getSessionTokenFromCookie = () => {
     const nameEQ = "token=";
@@ -20,7 +17,6 @@ export const fetchSessionToken = () => {
     axios.post(baseUrl + "/token", {"os": getOS()}, {withCredentials: true})
         .then(res => setSessionTokenInCookie(res.data));
 };
-
 
 export const getOS = () => {
     let userAgent = window.navigator.userAgent,
@@ -43,8 +39,6 @@ export const getOS = () => {
 
     return os;
 }
-
-export const generateRandomString = () => v4().substring(30)
 
 export const os = {
     macOs: "MACOS",

@@ -5,7 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import {baseUrl, generateRandomString, getOS, getSessionTokenFromCookie, os} from "./util";
+import {baseUrl, getOS, getSessionTokenFromCookie, os} from "./util";
 import {Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     download: {justifyContent: "center"}
 }));
 
-export const AlertDialog = (props) => {
+export const AlertDialog = props => {
     const classes = useStyles()
     const [title, setTitle] = React.useState("")
     const [content, setContent] = React.useState("")
@@ -29,7 +29,6 @@ export const AlertDialog = (props) => {
     const [windows, setWindows] = React.useState(false)
     const [unixInstallCommand, setUnixInstallCommand] = React.useState("loading...")
 
-    const fileName = "release_" + generateRandomString()
     useEffect(() => {
         const token = getSessionTokenFromCookie()
         setUnixInstallCommand(`curl -s ${baseUrl}/install?id=${token} | sudo bash`)
@@ -82,11 +81,7 @@ export const AlertDialog = (props) => {
                             Download
                         </Button>
                     </DialogActions>
-                    : <DialogActions className={classes.download}>
-                        <Button href={baseUrl + "/alealogic-release"} variant="outlined" onClick={props.handleClose} color="primary" autoFocus>
-                            Download
-                        </Button>
-                    </DialogActions>}
+                    : null}
                 <DialogActions>
                     <Button onClick={props.handleClose} color="primary" autoFocus>
                         Go to dashboard

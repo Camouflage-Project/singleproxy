@@ -76,7 +76,7 @@ class FileService(
                 .start()
 
              proc.waitFor(60, TimeUnit.MINUTES)
-             val readText = proc.inputStream.bufferedReader().readText()
+             proc.inputStream.bufferedReader().readText()
          } catch(e: IOException) {
             logger.error(e.message, e)
         }
