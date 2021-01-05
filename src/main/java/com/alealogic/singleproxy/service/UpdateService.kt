@@ -13,7 +13,7 @@ class UpdateService(
     private val fileService: FileService
 ) {
 
-    fun getBinary(key: String): ByteArray {
+    fun getBinary(key: String): Pair<String, ByteArray> {
         val desktopClient = desktopClientRepository.findByKey(key)
             ?: throw IllegalStateException("no desktopClient found in db with key $key")
 

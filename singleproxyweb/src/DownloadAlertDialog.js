@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     download: {justifyContent: "center"}
 }));
 
-export const AlertDialog = props => {
+export const DownloadAlertDialog = props => {
     const classes = useStyles()
     const [title, setTitle] = React.useState("")
     const [content, setContent] = React.useState("")

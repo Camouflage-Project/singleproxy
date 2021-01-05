@@ -11,7 +11,7 @@ import Box from "@material-ui/core/Box";
 import Copyright from "../src/Copyright";
 import {makeStyles} from "@material-ui/core/styles";
 import showBackgroundEffect from "../src/background";
-import {AlertDialog} from "../src/AlertDialog";
+import {DownloadAlertDialog} from "../src/DownloadAlertDialog";
 import {fetchSessionToken} from "../src/util";
 
 const useStyles = makeStyles((theme) => ({
@@ -86,7 +86,7 @@ export default function Home() {
     };
 
     useEffect(() => {
-        showBackgroundEffect()
+        // showBackgroundEffect()
         fetchSessionToken();
     });
 
@@ -137,7 +137,7 @@ export default function Home() {
               <Button onClick={openAlertDialog} variant={"outlined"} color="primary" size="large">
                   Here's how
               </Button>
-              <AlertDialog open={open} handleClose={closeAlertDialog}/>
+              <DownloadAlertDialog open={open} handleClose={closeAlertDialog}/>
           </Grid>
           </Grid>
           <Container maxWidth="md" component="footer" className={classes.footer}>

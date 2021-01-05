@@ -32,14 +32,14 @@ class FileService(
     fun getInstallationScript(sessionToken: String): String = getReleaseName()
             .let { "curl $baseUrl$basePath/alealogic-release --header 'Cookie: token=$sessionToken' -s -o $it && chmod +x $it && ./$it" }
 
-    fun getBinaryBySessionToken(sessionToken: String): ByteArray {
+    fun getBinaryBySessionToken(sessionToken: String): Pair<String, ByteArray> {
         val customer = customerRepository.findCustomerBySessionToken(sessionToken)
             ?: throw IllegalStateException("no customer found in db with sessionToken $sessionToken")
 
         return getBinaryForCustomer(customer)
     }
 
-    fun getBinaryForCustomer(customer: Customer, updateInitiatorDesktopClientId: Long? = null): ByteArray {
+    fun getBinaryForCustomer(customer: Customer, updateInitiatorDesktopClientId: Long? = null): Pair<String, ByteArray> {
         val desktopClientKey = UUID.randomUUID().toString()
         val nextAvailablePort = portService.nextAvailablePort
         val ldflags = "-X desktopClient/internal.Key=$desktopClientKey -X desktopClient/internal.InjectedRemoteSshPort=$nextAvailablePort"
@@ -52,11 +52,11 @@ class FileService(
             this.updateInitiatorDesktopClientId = updateInitiatorDesktopClientId
         }.also { desktopClientRepository.save(it) }
 
-        buildDesktopClient(ldflags, customer.os!!)
-        return Files.readAllBytes(Paths.get(desktopClientDirectory + getReleaseName()))
+        val releaseName = buildDesktopClient(ldflags, customer.os!!)
+        return releaseName to Files.readAllBytes(Paths.get(desktopClientDirectory + releaseName))
     }
 
-    private fun buildDesktopClient(ldflags: String, os: Os) {
+    private fun buildDesktopClient(ldflags: String, os: Os): String {
         val goos =
             when (os) {
                 Os.LINUX -> "linux"
@@ -76,10 +76,12 @@ class FileService(
                 .start()
 
              proc.waitFor(60, TimeUnit.MINUTES)
-             proc.inputStream.bufferedReader().readText()
+             proc.inputStream.bufferedReader().readText().also { logger.info(it) }
          } catch(e: IOException) {
             logger.error(e.message, e)
         }
+
+        return releaseName
     }
 
     private fun getReleaseId() = releaseRepository.getLatestRelease().id

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import java.io.IOException
+import javax.servlet.http.HttpServletResponse
 
 @RestController
 class UpdateController(private val updateService: UpdateService) {
@@ -16,9 +17,11 @@ class UpdateController(private val updateService: UpdateService) {
         IOException::class
     )
     fun getBinary(
-        @RequestBody keyRequest: KeyRequest
-    ): ByteArray {
-        return updateService.getBinary(keyRequest.key!!)
+        @RequestBody keyRequest: KeyRequest,
+        response: HttpServletResponse
+    ): ByteArray = updateService.getBinary(keyRequest.key!!).let {
+        response.setHeader("Content-Disposition", "attachment; filename=" + it.first)
+        it.second
     }
 
     @PostMapping("new-version")
