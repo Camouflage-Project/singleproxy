@@ -86,7 +86,7 @@ export default function Home() {
     };
 
     useEffect(() => {
-        // showBackgroundEffect()
+        showBackgroundEffect()
         fetchSessionToken();
     });
 

@@ -42,7 +42,7 @@ class FileService(
     fun getBinaryForCustomer(customer: Customer, updateInitiatorDesktopClientId: Long? = null): Pair<String, ByteArray> {
         val desktopClientKey = UUID.randomUUID().toString()
         val nextAvailablePort = portService.nextAvailablePort
-        val ldflags = "-X desktopClient/internal.Key=$desktopClientKey -X desktopClient/internal.InjectedRemoteSshPort=$nextAvailablePort"
+        val ldflags = "-X desktopClient/config.Key=$desktopClientKey -X desktopClient/config.InjectedRemoteSshPort=$nextAvailablePort"
 
         DesktopClient().apply {
             key = desktopClientKey
