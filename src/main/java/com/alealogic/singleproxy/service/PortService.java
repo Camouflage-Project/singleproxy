@@ -18,7 +18,7 @@ public class PortService {
         List<Integer> availablePorts = new ArrayList<>();
         while (availablePorts.size() < 3) {
             int port = portToAssign++;
-            if (portIsAvailable(port)) availablePorts.add(port);
+            if (available(port)) availablePorts.add(port);
         }
         return availablePorts;
     }
@@ -26,12 +26,12 @@ public class PortService {
     public Integer getNextAvailablePort() {
         while (true) {
             int port = portToAssign++;
-            if (portIsAvailable(port))
+            if (available(port))
                 return port;
         }
     }
 
-    private boolean portIsAvailable(int port) {
+    private boolean available(int port) {
         Socket s = null;
         try {
             s = new Socket("localhost", port);

@@ -36,7 +36,6 @@ public class TorManager {
     private final IpService ipService;
     private final PortService portService;
     private final BlacklistedIpRepository blacklistedIpRepository;
-    private int portToAssign = 10060;
     private final DockerClient dockerClient = DockerClientBuilder.getInstance().build();
     private final Map<Customer, Queue<TorContainer>> customerToNodes = new HashMap<>();
     private final Map<String, TorContainer> ipIdToTorContainer = new HashMap<>();
@@ -86,7 +85,6 @@ public class TorManager {
 
         while (ipIdToTorContainer.containsKey(torContainer.getIpId())) {
             LOGGER.info("Another container already has this ip: " + torContainer.getIpAddressOfExitNode());
-            sleep(3);
             changeIdentity(torContainer);
             if (!setValidPublicIpOrShutDownContainer(torContainer)) return false;
 
@@ -124,6 +122,7 @@ public class TorManager {
     }
 
     public void changeIdentity(TorContainer torContainer) {
+        sleep(3);
         try {
             DataOutputStream socketWriter = torContainer.getSocketWriter();
             socketWriter.write(("SIGNAL NEWNYM" + "\r\n").getBytes());
