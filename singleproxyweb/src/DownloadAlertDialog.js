@@ -5,7 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import {baseUrl, getOS, getSessionTokenFromCookie, os} from "./util";
+import {baseUrl, getOS, os} from "./util";
 import {Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import Link from "next/link";
@@ -24,38 +24,36 @@ const useStyles = makeStyles(theme => ({
 
 export const DownloadAlertDialog = props => {
     const classes = useStyles()
-    const [title, setTitle] = React.useState("")
-    const [content, setContent] = React.useState("")
-    const [unix, setUnix] = React.useState(false)
-    const [windows, setWindows] = React.useState(false)
-    const [unixInstallCommand, setUnixInstallCommand] = React.useState("loading...")
-
-    useEffect(() => {
-        const token = getSessionTokenFromCookie()
-        setUnixInstallCommand(`curl -s ${baseUrl}/install?id=${token} | sudo bash`)
-    }, []);
-
     const unixInstallContent = "To install, just copy and paste the below code into a terminal window and press enter. Then, proceed to your dashboard."
 
-    useEffect(() => {
-        let currentOs = getOS();
-        if (currentOs === os.linux) {
-            setTitle("Linux installation")
-            setContent(unixInstallContent)
-            setUnix(true)
-        }else if (currentOs === os.macOs) {
-            setTitle("MacOS installation")
-            setContent(unixInstallContent)
-            setUnix(true)
-        } else if (currentOs === os.windows) {
-            setTitle("Windows installation")
-            setContent("Click to download and then right click on the downloaded file and click Run as administrator.")
-            setWindows(true)
-        } else {
-            setTitle("Installation")
-            setContent("AleaLogic SingleProxy is currently not supported on mobile devices. Please access this page on a Windows/MacOS/Linux device to install.")
-        }
-    });
+    const currentOs = getOS()
+    let title
+    let content
+    let unix = false
+    let windows = false
+
+    switch (currentOs) {
+        case os.linux:
+            title = "Linux installation"
+            content = unixInstallContent
+            unix = true
+            break
+        case os.macOs:
+            title = "MacOS installation"
+            content = unixInstallContent
+            unix = true
+            break
+        case os.windows:
+            title = "Windows installation"
+            content = "Click to download and then right click on the downloaded file and click Run as administrator."
+            windows = true
+            break
+        default:
+            title = "Installation"
+            content = "AleaLogic SingleProxy is currently not supported on mobile devices. Please access this page on a Windows/MacOS/Linux device to install."
+    }
+
+    const unixInstallCommand = `curl -s ${baseUrl}/install?id=${props.token} | sudo bash`
 
     return (
         <div>

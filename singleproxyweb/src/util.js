@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const setSessionTokenInCookie = token => document.cookie = "token=" + token
 
-export const getSessionTokenFromCookie = () => {
+const getSessionTokenFromCookie = () => {
     const nameEQ = "token=";
     const ca = document.cookie.split(';');
     for(let i=0;i < ca.length;i++) {
@@ -13,12 +13,22 @@ export const getSessionTokenFromCookie = () => {
     return null;
 }
 
-export const fetchSessionToken = () => {
+export const getSessionToken = (setSessionTokenState) => {
+    let sessionTokenFromCookie = getSessionTokenFromCookie();
+    if (sessionTokenFromCookie) setSessionTokenState(sessionTokenFromCookie)
+    else fetchSessionToken(setSessionTokenState)
+}
+
+const fetchSessionToken = (setSessionTokenState) => {
     axios.post(baseUrl + "/token", {"os": getOS()}, {withCredentials: true})
-        .then(res => setSessionTokenInCookie(res.data));
+        .then(res => {
+            setSessionTokenInCookie(res.data)
+            setSessionTokenState(res.data)
+        });
 };
 
 export const getOS = () => {
+    if (typeof window === "undefined") return
     let userAgent = window.navigator.userAgent,
         platform = window.navigator.platform,
         macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K', 'darwin'],

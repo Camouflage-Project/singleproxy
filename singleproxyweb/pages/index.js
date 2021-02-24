@@ -12,7 +12,7 @@ import Copyright from "../src/Copyright";
 import {makeStyles} from "@material-ui/core/styles";
 import showBackgroundEffect from "../src/background";
 import {DownloadAlertDialog} from "../src/DownloadAlertDialog";
-import {fetchSessionToken} from "../src/util";
+import {fetchSessionToken, getSessionToken} from "../src/util";
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
@@ -76,6 +76,7 @@ export default function Home() {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);
+    const [token, setToken] = React.useState("");
 
     const openAlertDialog = () => {
         setOpen(true);
@@ -87,7 +88,7 @@ export default function Home() {
 
     useEffect(() => {
         showBackgroundEffect()
-        fetchSessionToken();
+        getSessionToken(setToken)
     });
 
   return (
@@ -134,10 +135,16 @@ export default function Home() {
               </Typography>
           </Container>
           <Grid container maxWidth="md" component="main" className={classes.centered}>
-              <Button onClick={openAlertDialog} variant={"outlined"} color="primary" size="large">
-                  Here's how
-              </Button>
-              <DownloadAlertDialog open={open} handleClose={closeAlertDialog}/>
+              {
+                  token
+                  ?
+                  <Button onClick={openAlertDialog} variant={"outlined"} color="primary" size="large">
+                      Here's how
+                  </Button>
+                  :
+                  null
+              }
+              <DownloadAlertDialog token={token} open={open} handleClose={closeAlertDialog}/>
           </Grid>
           </Grid>
           <Container maxWidth="md" component="footer" className={classes.footer}>
