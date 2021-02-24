@@ -31,6 +31,9 @@ public class MainService {
         PortDto nextPortForCustomer = customer.getPremium()
                 ? premiumProxyService.getNextPremiumPortForCustomer(customer)
                 : torManager.getNextTorPortForCustomer(customer);
+
+        System.out.println(hostRelativeToBalancer);
+        System.out.println(nextPortForCustomer);
         return new ProxyDto(hostRelativeToBalancer, nextPortForCustomer.getPort(), nextPortForCustomer.getIpId());
     }
 
