@@ -66,8 +66,6 @@ class FileService(
                 else -> "windows"
             }
 
-        goBuild()
-
         val releaseName = getReleaseName() + if (os == Os.WINDOWS) ".exe" else ""
 
          try {
@@ -85,21 +83,6 @@ class FileService(
         }
 
         return releaseName
-    }
-
-    private fun goBuild(){
-        try {
-            val proc = ProcessBuilder(goCommand, "build")
-                .directory(File(desktopClientDirectory))
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start()
-
-            proc.waitFor(60, TimeUnit.MINUTES)
-            proc.inputStream.bufferedReader().readText().also { logger.info(it) }
-        } catch(e: IOException) {
-            logger.error(e.message, e)
-        }
     }
 
     private fun getReleaseId() = releaseRepository.getLatestRelease().id
