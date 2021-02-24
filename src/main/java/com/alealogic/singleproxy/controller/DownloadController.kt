@@ -7,7 +7,7 @@ import java.io.IOException
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:3000", "http://10.0.2.2:3000"], allowCredentials = "true")
+@CrossOrigin(origins = ["http://localhost:3000", "http://10.0.2.2:3000", "https://alealogic.com:443"], allowCredentials = "true")
 class DownloadController(private val fileService: FileService) {
 
     @GetMapping(value = ["alealogic-release"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
