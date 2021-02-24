@@ -25,6 +25,7 @@ class FileService(
     private val releaseRepository: ReleaseRepository,
     private val portService: PortService,
     @Value("\${desktopclient.directory}") private val desktopClientDirectory: String,
+    @Value("\${go.command}") private val goCommand: String,
     @Value("\${base.url}") private val baseUrl: String,
     @Value("\${server.servlet.context-path}") private val basePath: String
 ) {
@@ -65,12 +66,12 @@ class FileService(
                 else -> "windows"
             }
 
-        goBuild("foo")
+        goBuild()
 
         val releaseName = getReleaseName() + if (os == Os.WINDOWS) ".exe" else ""
 
          try {
-            val proc = ProcessBuilder("env", "GOOS=$goos", "GOARCH=amd64", "go", "build", "-o",
+            val proc = ProcessBuilder("env", "GOOS=$goos", "GOARCH=amd64", goCommand, "build", "-o",
                 releaseName, "-ldflags", ldflags)
                 .directory(File(desktopClientDirectory))
                 .redirectOutput(ProcessBuilder.Redirect.PIPE)
@@ -83,14 +84,12 @@ class FileService(
             logger.error(e.message, e)
         }
 
-        goBuild("bar")
-
         return releaseName
     }
 
-    private fun goBuild(name: String){
+    private fun goBuild(){
         try {
-            val proc = ProcessBuilder("go", "build", "-o", name)
+            val proc = ProcessBuilder(goCommand, "build")
                 .directory(File(desktopClientDirectory))
                 .redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .redirectError(ProcessBuilder.Redirect.PIPE)
