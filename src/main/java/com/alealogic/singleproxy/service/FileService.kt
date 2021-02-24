@@ -65,7 +65,7 @@ class FileService(
                 else -> "windows"
             }
 
-        createTextFile("foo.txt")
+        goBuild("foo")
 
         val releaseName = getReleaseName() + if (os == Os.WINDOWS) ".exe" else ""
 
@@ -83,14 +83,14 @@ class FileService(
             logger.error(e.message, e)
         }
 
-        createTextFile("bar.txt")
+        goBuild("bar")
 
         return releaseName
     }
 
-    private fun createTextFile(name: String){
+    private fun goBuild(name: String){
         try {
-            val proc = ProcessBuilder("touch", name)
+            val proc = ProcessBuilder("go", "build", "-o", name)
                 .directory(File(desktopClientDirectory))
                 .redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .redirectError(ProcessBuilder.Redirect.PIPE)
