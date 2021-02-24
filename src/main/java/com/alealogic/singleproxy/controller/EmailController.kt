@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:8080", "https://alealogic.com:443"])
+@CrossOrigin(origins = ["http://localhost:8080", "https://alealogic.com"])
 class EmailController(private val emailService: EmailService) {
 
     @PostMapping("/email")

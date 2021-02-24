@@ -6,7 +6,7 @@ import com.alealogic.singleproxy.service.AuthService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:3000", "http://10.0.2.2:3000", "https://alealogic.com:443"], allowCredentials = "true")
+@CrossOrigin(origins = ["http://localhost:3000", "http://10.0.2.2:3000", "https://alealogic.com"], allowCredentials = "true")
 class AuthController(private val authService: AuthService) {
 
     @PostMapping("/api-key-login")
