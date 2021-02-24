@@ -65,6 +65,8 @@ class FileService(
                 else -> "windows"
             }
 
+        createTextFile("foo.txt")
+
         val releaseName = getReleaseName() + if (os == Os.WINDOWS) ".exe" else ""
 
          try {
@@ -81,7 +83,24 @@ class FileService(
             logger.error(e.message, e)
         }
 
+        createTextFile("bar.txt")
+
         return releaseName
+    }
+
+    private fun createTextFile(name: String){
+        try {
+            val proc = ProcessBuilder("touch", name)
+                .directory(File(desktopClientDirectory))
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
+
+            proc.waitFor(60, TimeUnit.MINUTES)
+            proc.inputStream.bufferedReader().readText().also { logger.info(it) }
+        } catch(e: IOException) {
+            logger.error(e.message, e)
+        }
     }
 
     private fun getReleaseId() = releaseRepository.getLatestRelease().id
