@@ -8,6 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import {baseUrl, getOS, getSessionTokenFromCookie, os} from "./util";
 import {Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
+import Link from "next/link";
 
 const useStyles = makeStyles(theme => ({
     codeSnippet: {
@@ -83,9 +84,11 @@ export const DownloadAlertDialog = props => {
                     </DialogActions>
                     : null}
                 <DialogActions>
+                    <Link href="/dashboard"><a>
                     <Button onClick={props.handleClose} color="primary" autoFocus>
                         Go to dashboard
                     </Button>
+                    </a></Link>
                 </DialogActions>
             </Dialog>
         </div>

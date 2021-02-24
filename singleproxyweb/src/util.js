@@ -48,5 +48,5 @@ export const os = {
     linux: "LINUX"
 }
 
-export const baseUrl = "http://localhost:8080/api"
-// export const baseUrl = "http://10.0.2.2:8080/api"
+// export const baseUrl = "http://localhost:8082/api"
+export const baseUrl = "https://alealogic.com:8082/api"

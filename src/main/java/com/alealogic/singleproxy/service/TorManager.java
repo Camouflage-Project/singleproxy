@@ -140,7 +140,7 @@ public class TorManager {
         int controlPort = ports[1];
         int httpPort = ports[2];
 
-        CreateContainerResponse container = dockerClient.createContainerCmd("test:1.0")
+        CreateContainerResponse container = dockerClient.createContainerCmd("torprivoxy:1.0")
                 .withHostConfig(new HostConfig().withNetworkMode("host"))
                 .withCmd(String.valueOf(torPort), String.valueOf(controlPort), String.valueOf(httpPort))
                 .exec();

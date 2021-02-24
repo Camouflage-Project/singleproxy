@@ -104,7 +104,7 @@ public class IpService {
         dispatcher.setMaxRequests(50);
         dispatcher.setMaxRequestsPerHost(50);
 
-        int timeout = 700;
+        int timeout = 30;
 
         return new OkHttpClient.Builder()
                 .callTimeout(Duration.ofSeconds(timeout))
