@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 public class MainService {
 
-    @Value("proxy.host.relative.to.balancer")
+    @Value("${proxy.host.relative.to.balancer}")
     private String hostRelativeToBalancer;
     private final TorManager torManager;
     private final PremiumProxyService premiumProxyService;
@@ -32,8 +32,6 @@ public class MainService {
                 ? premiumProxyService.getNextPremiumPortForCustomer(customer)
                 : torManager.getNextTorPortForCustomer(customer);
 
-        System.out.println(hostRelativeToBalancer);
-        System.out.println(nextPortForCustomer);
         return new ProxyDto(hostRelativeToBalancer, nextPortForCustomer.getPort(), nextPortForCustomer.getIpId());
     }
 
