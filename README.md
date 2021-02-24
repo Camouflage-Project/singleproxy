@@ -16,8 +16,9 @@ docker run --name postgres -e POSTGRES_PASSWORD=somepassword -v /home/postgres/d
 
 
 build and start with:
-mvn package
-java -jar compiledjar.jar -Dspring.profiles.active=prod
+mvn org.jetbrains.kotlin:kotlin-maven-plugin:1.4.21:compile
+mvn install -DskipTests
+java -jar -Dspring.profiles.active=prod singleproxy-0.0.1-SNAPSHOT.jar
 
 
 start zaproxy 
@@ -49,4 +50,5 @@ start and call zaproxy like mentioned above
 
 
 start frontend
+npm run build
 sudo NODE_ENV=production node server.js
