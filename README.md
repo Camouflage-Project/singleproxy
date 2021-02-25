@@ -1,4 +1,5 @@
 singleproxy.com
+alealogic.com
 
 to create torprivoxy docker image:
 tor --hash-password password
@@ -20,19 +21,22 @@ mvn org.jetbrains.kotlin:kotlin-maven-plugin:1.4.21:compile && mvn install -Dski
 java -jar -Dspring.profiles.active=prod singleproxy-0.0.1-SNAPSHOT.jar
 
 
-start zaproxy 
+start martian:
 
+cd martian/cmd/proxy
+go build
+./proxy -key rootCAKey.pem -cert rootCACert.pem -har --api=localhost
+note: pems must be in same directory as binary
+make request with:
+curl -vx localhost:8080 -H "Singleproxy-API-key: c7ccad6d-f2ce-4597-9958-ded2a712a4d6" --cacert rootCACert.pem https://httpbin.org/get
+
+or 
+
+start zaproxy:
 make request with:
 curl -vx localhost:8082 --cacert my_certificate.cer -H "Singleproxy-API-key: 80d2e07e-eb75-410b-a832-bf6020cde212" https://icanhazip.com/
 
 note: my_certificate.cer is located in project root. the above curl must be executed in the directory where my_certificate.cer is located
-
-or
-
-start martian
-
-make request with:
-curl -vx localhost:8080 -H "Singleproxy-API-key: c7ccad6d-f2ce-4597-9958-ded2a712a4d6" --cacert rootCACert.pem https://httpbin.org/get
 
 
 to create privoxy docker image:
