@@ -68,26 +68,41 @@ export const DownloadAlertDialog = props => {
                     <DialogContentText className={classes.content} id="alert-dialog-description">
                         {content}
                     </DialogContentText>
-                    {unix
-                        ? <DialogContentText id="alert-dialog-description">
-                            <Typography className={classes.codeSnippet}>{unixInstallCommand}</Typography>
-                        </DialogContentText>
-                        : null}
+                    {
+                        unix
+                            ?
+                            <DialogContentText id="alert-dialog-description">
+                                <Typography className={classes.codeSnippet}>{unixInstallCommand}</Typography>
+                            </DialogContentText>
+                            :
+                            null
+                    }
                 </DialogContent>
-                {windows
-                    ? <DialogActions className={classes.download}>
-                        <Button href={baseUrl + "/alealogic-release"} variant="outlined" onClick={props.handleClose} color="primary" autoFocus>
-                            Download
-                        </Button>
-                    </DialogActions>
-                    : null}
-                <DialogActions>
-                    <Link href="/dashboard"><a>
-                    <Button onClick={props.handleClose} color="primary" autoFocus>
-                        Go to dashboard
-                    </Button>
-                    </a></Link>
-                </DialogActions>
+                {
+                    windows
+                        ?
+                        <DialogActions className={classes.download}>
+                            <Button href={baseUrl + "/alealogic-release"} variant="outlined" onClick={props.handleClose}
+                                    color="primary" autoFocus>
+                                Download
+                            </Button>
+                        </DialogActions>
+                        :
+                        null
+                }
+                {
+                    windows || unix
+                        ?
+                        <DialogActions>
+                            <Link href="/dashboard"><a>
+                                <Button onClick={props.handleClose} color="primary" autoFocus>
+                                    Go to dashboard
+                                </Button>
+                            </a></Link>
+                        </DialogActions>
+                        :
+                        null
+                }
             </Dialog>
         </div>
     );
