@@ -20,6 +20,7 @@ export const getSessionToken = (setSessionTokenState) => {
 }
 
 const fetchSessionToken = (setSessionTokenState) => {
+    console.log("fetching token...")
     axios.post(baseUrl + "/token", {"os": getOS()}, {withCredentials: true})
         .then(res => {
             setSessionTokenInCookie(res.data)
