@@ -12,5 +12,5 @@ interface DesktopClientRepository : JpaRepository<DesktopClient?, Long?> {
 
     fun findByIpId(ipId: String): DesktopClient?
 
-    fun findByCustomerId(customerId: Long): DesktopClient
+    fun findByCustomerId(customerId: Long): DesktopClient?
 }

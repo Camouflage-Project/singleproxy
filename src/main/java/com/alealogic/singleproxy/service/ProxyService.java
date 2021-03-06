@@ -4,6 +4,7 @@ import com.alealogic.singleproxy.entity.BlacklistedIp;
 import com.alealogic.singleproxy.entity.Customer;
 import com.alealogic.singleproxy.entity.DesktopClient;
 import com.alealogic.singleproxy.entity.Request;
+import com.alealogic.singleproxy.exception.NotFoundException;
 import com.alealogic.singleproxy.model.BlacklistRequest;
 import com.alealogic.singleproxy.model.PortDto;
 import com.alealogic.singleproxy.model.ProxyDto;
@@ -100,7 +101,7 @@ public class ProxyService {
 
     public boolean getProxyStatusForCustomer(String token) {
         final var customerBySessionToken = authService.authenticateBySessionToken(token);
-        return desktopClientRepository.findByCustomerId(customerBySessionToken.getId()).getActive();
+        return getDesktopClientByCustomerId(customerBySessionToken.getId()).getActive();
     }
 
     @NotNull
@@ -127,7 +128,12 @@ public class ProxyService {
 
     private DesktopClient getDesktopClientBySessionToken(String token) {
         final var customerBySessionToken = authService.authenticateBySessionToken(token);
-        return desktopClientRepository.findByCustomerId(customerBySessionToken.getId());
+        return getDesktopClientByCustomerId(customerBySessionToken.getId());
+    }
+
+    private DesktopClient getDesktopClientByCustomerId(Long customerId) {
+        final var byCustomerId = desktopClientRepository.findByCustomerId(customerId);
+        return Optional.ofNullable(byCustomerId).orElseThrow(NotFoundException::new);
     }
 
     public void acceptApiKey(@NotNull String token) {

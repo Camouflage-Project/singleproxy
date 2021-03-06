@@ -12,7 +12,8 @@ const http = require('http')
 const fs = require('fs');
 const options = {
     key: fs.readFileSync('/etc/letsencrypt/live/alealogic.com/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/alealogic.com/cert.pem')
+    cert: fs.readFileSync('/etc/letsencrypt/live/alealogic.com/cert.pem'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/alealogic.com/chain.pem'),
 };
 
 
