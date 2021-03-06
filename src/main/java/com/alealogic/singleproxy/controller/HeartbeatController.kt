@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody
 class HeartbeatController(private val heartbeatService: HeartbeatService) {
 
     @PostMapping("heartbeat")
-    fun heartbeat(@RequestBody heartbeatRequest: HeartbeatRequest) {
+    fun heartbeat(@RequestBody heartbeatRequest: HeartbeatRequest) =
         heartbeatService.heartbeat(heartbeatRequest.key!!, heartbeatRequest.ip!!)
-    }
+
 }

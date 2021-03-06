@@ -75,8 +75,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
     const classes = useStyles();
 
-    const [open, setOpen] = React.useState(false);
     const [token, setToken] = React.useState("");
+    const [open, setOpen] = React.useState(false);
 
     const openAlertDialog = () => {
         setOpen(true);

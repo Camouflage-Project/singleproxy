@@ -2,7 +2,9 @@ import axios from "axios";
 
 export const setSessionTokenInCookie = token => document.cookie = "token=" + token
 
-const getSessionTokenFromCookie = () => {
+export const deleteSessionTokenInCookie = () => document.cookie = "token="
+
+export const getSessionTokenFromCookie = () => {
     const nameEQ = "token=";
     const ca = document.cookie.split(';');
     for(let i=0;i < ca.length;i++) {
@@ -25,7 +27,7 @@ const fetchSessionToken = (setSessionTokenState) => {
             setSessionTokenInCookie(res.data)
             setSessionTokenState(res.data)
         });
-};
+}
 
 export const getOS = () => {
     if (typeof window === "undefined") return
@@ -58,5 +60,5 @@ export const os = {
     linux: "LINUX"
 }
 
-// export const baseUrl = "http://localhost:8082/api"
-export const baseUrl = "https://alealogic.com:8082/api"
+export const baseUrl = "http://localhost:8082/api"
+// export const baseUrl = "https://alealogic.com:8082/api"

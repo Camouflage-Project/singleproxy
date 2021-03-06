@@ -13,5 +13,6 @@ data class Customer (
     var sessionToken: String? = null,
     var premium: Boolean = false,
     @Enumerated(EnumType.STRING)
-    var os: Os? = null
+    var os: Os? = null,
+    var apiKeyDialogAccepted: Boolean = false
 )

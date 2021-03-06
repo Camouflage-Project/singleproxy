@@ -55,3 +55,7 @@ start and call zaproxy like mentioned above
 start frontend
 npm run build
 sudo NODE_ENV=production node server.js
+
+
+block ports:
+iptables -A INPUT -p tcp  --dport 10060:11060 -j DROP

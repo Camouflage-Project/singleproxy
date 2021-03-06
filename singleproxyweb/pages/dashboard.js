@@ -1,28 +1,27 @@
 import React, {useEffect} from 'react';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
 import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems, secondaryListItems } from '../src/listItems';
-import Chart from '../src/Chart';
-import Deposits from '../src/Deposits';
-import Orders from '../src/Orders';
+import Status from '../src/Status';
+import Earnings from '../src/Earnings';
+import Requests from '../src/Requests';
 import Copyright from "../src/Copyright";
 import {useRouter} from "next/router";
+import Button from '@material-ui/core/Button';
+import {baseUrl, deleteSessionTokenInCookie, getSessionTokenFromCookie} from "../src/util";
+import Link from "next/link";
+import {AccountKeyAlertDialog} from "../src/AccountKeyAlertDialog";
+import axios from "axios";
+
 
 const drawerWidth = 240;
 
@@ -116,18 +115,34 @@ export default function dashboard() {
 
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
+    const [apiKey, setApiKey] = React.useState("");
+
+    const closeApiKeyDialog = () => {
+        setApiKey("");
+    };
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
+
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+    const fetchAccountKey = () => {
+        axios.get(baseUrl + "/api-key", {
+            headers: {
+                'token': getSessionTokenFromCookie()
+            }
+        })
+            .then(res => setApiKey(res.data))
+            .catch(_ => router.push("/login"))
+    }
+
+    useEffect(fetchAccountKey)
 
     return (
         <div className={classes.root}>
-            <CssBaseline />
-            <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
+            <CssBaseline/>
+            <AppBar position="absolute" className={clsx(classes.appBar)}>
                 <Toolbar className={classes.toolbar}>
                     <IconButton
                         edge="start"
@@ -136,60 +151,42 @@ export default function dashboard() {
                         onClick={handleDrawerOpen}
                         className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
                     >
-                        <MenuIcon />
+                        <MenuIcon/>
                     </IconButton>
                     <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                         Dashboard
                     </Typography>
-                    <IconButton color="inherit">
-                        <Badge badgeContent={4} color="secondary">
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
+                    <Link href="/login">
+                        <Button onClick={deleteSessionTokenInCookie} color="inherit">Log&nbsp;out</Button>
+                    </Link>
                 </Toolbar>
             </AppBar>
-            <Drawer
-                variant="permanent"
-                classes={{
-                    paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-                }}
-                open={open}
-            >
-                <div className={classes.toolbarIcon}>
-                    <IconButton onClick={handleDrawerClose}>
-                        <ChevronLeftIcon />
-                    </IconButton>
-                </div>
-                <Divider />
-                <List>{mainListItems}</List>
-                <Divider />
-                <List>{secondaryListItems}</List>
-            </Drawer>
             <main className={classes.content}>
-                <div className={classes.appBarSpacer} />
+                <div className={classes.appBarSpacer}/>
+                <AccountKeyAlertDialog open={!!apiKey} apiKey={apiKey} handleClose={closeApiKeyDialog}/>
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
                         {/* Chart */}
                         <Grid item xs={12} md={8} lg={9}>
                             <Paper className={fixedHeightPaper}>
-                                <Chart />
+                                <Status/>
                             </Paper>
                         </Grid>
                         {/* Recent Deposits */}
                         <Grid item xs={12} md={4} lg={3}>
                             <Paper className={fixedHeightPaper}>
-                                <Deposits />
+                                <Earnings/>
                             </Paper>
                         </Grid>
                         {/* Recent Orders */}
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
-                                <Orders />
+                                <Requests/>
                             </Paper>
                         </Grid>
                     </Grid>
                     <Box pt={4}>
-                        <Copyright />
+                        <Copyright/>
                     </Box>
                 </Container>
             </main>

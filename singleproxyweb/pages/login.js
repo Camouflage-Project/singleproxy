@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,8 +9,10 @@ import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from 'axios';
-import {baseUrl, setSessionTokenInCookie} from "../src/util";
+import {baseUrl, getSessionToken, setSessionTokenInCookie} from "../src/util";
 import {useRouter} from "next/router";
+import {DownloadAlertDialog} from "../src/DownloadAlertDialog";
+import showBackgroundEffect from "../src/background";
 
 function Copyright() {
     return (
@@ -41,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    install: {
+        marginTop: 15,
+    }
 }));
 
 export default function login() {
@@ -48,6 +53,20 @@ export default function login() {
     const [key, setKey] = React.useState("")
     const [loginError, setLoginError] = React.useState(false)
     const classes = useStyles();
+    const [open, setOpen] = React.useState(false);
+    const [token, setToken] = React.useState("");
+
+    const openAlertDialog = () => {
+        setOpen(true);
+    };
+
+    const closeAlertDialog = () => {
+        setOpen(false);
+    };
+
+    useEffect(() => {
+        getSessionToken(setToken)
+    });
 
     const submit = () => {
         axios.post(baseUrl + "/api-key-login", {"apiKey": key})
@@ -119,7 +138,14 @@ export default function login() {
                         Sign In
                     </Button>
                 </form>
+                <Typography variant="h5" align="center" color="textSecondary" component="p" className={classes.description}>
+                    or
+                </Typography>
+                <Button onClick={openAlertDialog} variant={"outlined"} color="primary" size="large" className={classes.install}>
+                    install new client
+                </Button>
             </div>
+            <DownloadAlertDialog token={token} open={open} handleClose={closeAlertDialog}/>
             <Box mt={8}>
                 <Copyright/>
             </Box>

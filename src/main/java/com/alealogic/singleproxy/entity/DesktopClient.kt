@@ -21,4 +21,7 @@ class DesktopClient {
     var updateToReleaseId: Long? = null
     var obsolete: Boolean = false
     var updateInitiatorDesktopClientId: Long? = null
+    var ipId: String? = null
+    var port: Int? = null
+    var active: Boolean = true
 }

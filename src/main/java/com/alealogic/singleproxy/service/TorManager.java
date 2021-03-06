@@ -54,7 +54,7 @@ public class TorManager {
         TorContainer nextNode = nodes.remove();
         nodes.add(nextNode);
 
-        return new PortDto(nextNode.getHttpPort(), nextNode.getIpId());
+        return new PortDto(nextNode.getHttpPort(), nextNode.getIpId(), null, nextNode.getContainerId());
     }
 
     public List<TorContainer> createTorContainers() {
