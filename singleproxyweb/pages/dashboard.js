@@ -107,12 +107,6 @@ const useStyles = makeStyles((theme) => ({
 export default function dashboard() {
     const router = useRouter();
 
-    useEffect(() => {
-        if (!loggedIn()) {
-            router.push('/login', undefined, {shallow: true})
-        }
-    }, []);
-
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
     const [apiKey, setApiKey] = React.useState("");
@@ -137,7 +131,7 @@ export default function dashboard() {
             .catch(_ => router.push("/login"))
     }
 
-    useEffect(fetchAccountKey)
+    useEffect(fetchAccountKey, [])
 
     return (
         <div className={classes.root}>
@@ -193,7 +187,3 @@ export default function dashboard() {
         </div>
     );
 }
-
-const loggedIn = () => {
-    return true;
-};

@@ -22,9 +22,7 @@ export default function Status() {
             .catch(_ => router.push("/login"))
     }
 
-    useEffect(() => {
-        fetchProxyStatus()
-    })
+    useEffect(fetchProxyStatus, [])
 
     return (
         <React.Fragment>

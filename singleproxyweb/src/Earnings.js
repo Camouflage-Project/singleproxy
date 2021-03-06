@@ -20,7 +20,7 @@ export default function Earnings() {
             .catch(_ => router.push("/login"))
     }
 
-    useEffect(fetchEarnings)
+    useEffect(fetchEarnings, [])
 
     return (
         <React.Fragment>

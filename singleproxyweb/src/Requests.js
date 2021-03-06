@@ -39,7 +39,7 @@ export default function Requests() {
         fetchRequestTimestamps()
     }
 
-    useEffect(fetchRequestTimestamps,requestTimestamps)
+    useEffect(fetchRequestTimestamps, [])
 
     return (
         <React.Fragment>

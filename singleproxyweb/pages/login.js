@@ -66,7 +66,7 @@ export default function login() {
 
     useEffect(() => {
         getSessionToken(setToken)
-    });
+    }, []);
 
     const submit = () => {
         axios.post(baseUrl + "/api-key-login", {"apiKey": key})

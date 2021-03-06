@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const setSessionTokenInCookie = token => document.cookie = "token=" + token
 
-export const deleteSessionTokenInCookie = () => document.cookie = "token="
+export const deleteSessionTokenInCookie = () => document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
 
 export const getSessionTokenFromCookie = () => {
     const nameEQ = "token=";
