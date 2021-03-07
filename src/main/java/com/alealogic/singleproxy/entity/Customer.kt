@@ -14,5 +14,6 @@ data class Customer (
     var premium: Boolean = false,
     @Enumerated(EnumType.STRING)
     var os: Os? = null,
-    var apiKeyDialogAccepted: Boolean = false
+    var apiKeyDialogAccepted: Boolean = false,
+    var developer: Boolean = false
 )

@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import clsx from 'clsx';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -73,10 +72,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function Home() {
+export default function Blockchain() {
     const classes = useStyles();
 
-    const [token, setToken] = React.useState("");
     const [open, setOpen] = React.useState(false);
 
     const openAlertDialog = () => {
@@ -89,7 +87,6 @@ export default function Home() {
 
     useEffect(() => {
         showBackgroundEffect()
-        getSessionToken(setToken)
     }, []);
 
   return (
@@ -112,11 +109,6 @@ export default function Home() {
                   <Typography variant="h5" color="inherit" noWrap className={classes.toolbarTitle}>
                       A L
                   </Typography>
-                  <Link href="/login"><a>
-                      <Button href="#" color="primary" variant="outlined" className={classes.link}>
-                          Login
-                      </Button>
-                  </a></Link>
               </Toolbar>
           </AppBar>
           <Grid
@@ -129,36 +121,17 @@ export default function Home() {
           >
           <Container maxWidth="sm" component="main" className={classes.heroContent}>
               <Typography className={classes.centerTitle} component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-                  AleaLogic
+                  Create your own cryptocurrency
               </Typography>
               <Typography variant="h5" align="center" color="textSecondary" component="p" className={classes.description}>
-                  Earn money by sharing your Internet bandwidth or your graphics card in just two clicks.
+                  distribute it as you see fit
               </Typography>
           </Container>
           <Grid container maxWidth="md" component="main" className={classes.centered}>
-              {
-                  token
-                  ?
-                  <Button onClick={openAlertDialog} variant={"outlined"} color="primary" size="large">
-                      Here's how
-                  </Button>
-                  :
-                  null
-              }
-              <DownloadAlertDialog token={token} open={open} handleClose={closeAlertDialog}/>
+              <Button onClick={openAlertDialog} variant={"outlined"} color="primary" size="large">
+                  Here's how
+              </Button>
           </Grid>
-          </Grid>
-          <Grid container maxWidth="md" component="main" className={classes.centered}>
-              <Typography variant="body1" align="center" color="textSecondary" component="p" className={classes.description}>
-                  Need high quality residential proxies for software development?
-              </Typography>
-          </Grid>
-          <Grid container maxWidth="md" component="main" className={classes.centered}>
-              <Link href="/login"><a>
-              <Typography variant="body1" align="center" color="primary" component="p" className={classes.description}>
-                  Click here to start sending requests
-              </Typography>
-              </a></Link>
           </Grid>
           <Container maxWidth="md" component="footer" className={classes.footer}>
               <Box mt={5}>
