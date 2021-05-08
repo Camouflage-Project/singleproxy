@@ -28,7 +28,9 @@ go build
 ./proxy -key rootCAKey.pem -cert rootCACert.pem -har --api=localhost
 note: pems must be in same directory as binary
 make request with:
-curl -vx localhost:8080 -H "Singleproxy-API-key: c7ccad6d-f2ce-4597-9958-ded2a712a4d6" --cacert rootCACert.pem https://httpbin.org/get
+curl -vx alealogic.com:8080 --cacert rootCACert.pem -H "Singleproxy-API-key: ff34298e-7fa4-4d83-a6e0-fa320157a6d6" https://icanhazip.com/
+
+note: rootCACert.pem is located in martian project root. the above curl must be executed in the directory where rootCACert.pem is located
 
 or 
 
