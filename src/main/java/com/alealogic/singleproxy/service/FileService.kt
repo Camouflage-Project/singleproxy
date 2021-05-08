@@ -49,7 +49,7 @@ class FileService(
             key = desktopClientKey
             customerId = customer.id
             releaseId = getReleaseId()
-            port = port
+            port = nextAvailablePort
             this.ldflags = ldflags
             this.updateInitiatorDesktopClientId = updateInitiatorDesktopClientId
         }.also { desktopClientRepository.save(it) }
