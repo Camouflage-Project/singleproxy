@@ -6,9 +6,9 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity
-class Release {
+data class Release (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    var id: Long? = null,
     var name: String? = null
-}
+)

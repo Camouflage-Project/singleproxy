@@ -6,9 +6,9 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity
-class Email {
+data class Email (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    var id: Long? = null,
     var email: String? = null
-}
+)
