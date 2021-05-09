@@ -24,7 +24,7 @@ class PremiumProxyService(private val desktopClientRepository: DesktopClientRepo
 
     fun removeFailedProxy(desktopClient: DesktopClient) = premiumProxies.remove(desktopClient)
 
-    @Scheduled(fixedDelay = 240000)
+    @Scheduled(fixedDelay = 10000)
     fun addNewPremiumProxies() {
         val allByActiveTrue = desktopClientRepository.findAllByActiveTrue()
         allByActiveTrue.removeAll(premiumProxies)
