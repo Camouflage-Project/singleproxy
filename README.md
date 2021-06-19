@@ -18,7 +18,7 @@ docker run --name postgres -e POSTGRES_PASSWORD=somepassword -v /home/postgres/d
 
 build and start with:
 mvn org.jetbrains.kotlin:kotlin-maven-plugin:1.5.0:compile && mvn install -DskipTests
-java -jar -Dspring.profiles.active=prod singleproxy-0.0.1-SNAPSHOT.jar
+java -jar -Dspring.profiles.active=prod target/singleproxy-0.0.1-SNAPSHOT.jar
 
 
 start martian:
