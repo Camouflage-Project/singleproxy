@@ -28,6 +28,7 @@ class PremiumProxyService(private val desktopClientRepository: DesktopClientRepo
     fun addNewPremiumProxies() {
         val allByActiveTrue = desktopClientRepository.findAllByActiveTrue()
         allByActiveTrue.removeAll(premiumProxies)
+        premiumProxies.retainAll(allByActiveTrue)
         premiumProxies.addAll(allByActiveTrue)
     }
 }

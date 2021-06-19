@@ -8,7 +8,7 @@ interface DesktopClientRepository : JpaRepository<DesktopClient?, Long?> {
 
     fun findByUpdateInitiatorDesktopClientId(id: Long?): DesktopClient?
 
-    fun findAllByActiveTrue(): MutableList<DesktopClient>
+    fun findAllByActiveTrue(): MutableSet<DesktopClient>
 
     fun findByIpId(ipId: String): DesktopClient?
 

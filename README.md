@@ -56,7 +56,7 @@ start and call zaproxy like mentioned above
 
 start frontend
 npm run build
-sudo NODE_ENV=production node server.js
+sudo NODE_ENV=production node server2.js
 
 
 block ports:
