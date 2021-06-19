@@ -7,7 +7,12 @@ import java.io.IOException
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:3000", "http://10.0.2.2:3000", "https://alealogic.com", "https://alealogic.com:3000"], allowCredentials = "true")
+@CrossOrigin(
+    origins = ["http://localhost:3000", "http://10.0.2.2:3000",
+        "https://alealogic.com", "https://alealogic.com:3000",
+        "https://www.alealogic.com:3000"
+    ], allowCredentials = "true"
+)
 class DownloadController(private val fileService: FileService) {
 
     @GetMapping(value = ["alealogic-release"], produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
@@ -16,7 +21,7 @@ class DownloadController(private val fileService: FileService) {
         @CookieValue("token") sessionToken: String,
         response: HttpServletResponse
     ): ByteArray = fileService.getBinaryBySessionToken(sessionToken).let {
-        response.setHeader("Content-Disposition", "attachment; filename=" + it.first)
+        response.setHeader("Content-Disposition", "attachment; filename=${it.first}")
         it.second
     }
 

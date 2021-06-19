@@ -8,8 +8,10 @@ import java.time.LocalDateTime
 
 @RestController
 @CrossOrigin(
-    origins = ["http://localhost:3000", "http://10.0.2.2:3000", "https://alealogic.com"],
-    allowCredentials = "true"
+    origins = ["http://localhost:3000", "http://10.0.2.2:3000",
+        "https://alealogic.com", "https://alealogic.com:3000",
+        "https://www.alealogic.com:3000"
+    ], allowCredentials = "true"
 )
 class ProxyController(private val proxyService: ProxyService, private val authService: AuthService) {
 
