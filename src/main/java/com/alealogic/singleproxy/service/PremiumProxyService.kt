@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue
 @Service
 class PremiumProxyService(private val desktopClientRepository: DesktopClientRepository) {
 
-    private val premiumProxies = getPremiumProxyQueue()
+    private var premiumProxies = getPremiumProxyQueue()
 
     private fun getPremiumProxyQueue(): LinkedBlockingQueue<DesktopClient> =
         LinkedBlockingQueue(desktopClientRepository.findAllByActiveTrue())
@@ -25,9 +25,8 @@ class PremiumProxyService(private val desktopClientRepository: DesktopClientRepo
     fun removeFailedProxy(desktopClient: DesktopClient) = premiumProxies.remove(desktopClient)
 
     @Scheduled(fixedDelay = 10000)
-    fun addNewPremiumProxies() {
+    fun refreshPremiumProxies() {
         val allByActiveTrue = desktopClientRepository.findAllByActiveTrue()
-        allByActiveTrue.removeAll(premiumProxies)
-        premiumProxies.addAll(allByActiveTrue)
+        premiumProxies = LinkedBlockingQueue(allByActiveTrue.shuffled())
     }
 }
